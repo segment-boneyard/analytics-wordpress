@@ -30,6 +30,7 @@
                                 </td>
                             </tr>
                         </table>
+
                         <p class="submit">
                             <input type="submit"
                                    name="save"
