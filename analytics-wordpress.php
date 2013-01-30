@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Analytics Wordpress
-Plugin URI: https://segment.io
+Plugin Name: Analytics for Wordpress
+Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
 Version: 0.1.0
-License: MIT
+License: GPLv2
 
 Author: Segment.io
 Author URI: https://segment.io

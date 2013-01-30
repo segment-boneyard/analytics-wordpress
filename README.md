@@ -1,7 +1,7 @@
-analytics-wordpress
-==============
+Analytics for Wordpress
+=======================
 
-analytics-wordpress is a Wordpress plugin for [Segment.io](https://segment.io)
+**Analytics for Wordpress** is a Wordpress plugin for [Segment.io](https://segment.io)
 
 ## Documentation
 
