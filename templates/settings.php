@@ -2,12 +2,12 @@
     <div id="icon-options-general" class="icon32"></div>
     <h2>Analytics Settings</h2>
 
-    <?php if (isset($_POST['submit']) && check_admin_referer($this->option_name)) { ?>
+    <?php if (isset($_POST['submit']) && check_admin_referer($this->option)) { ?>
         <div class="updated"><p>Analytics settings saved!</p></div>
     <?php } ?>
 
     <form method="post" action="">
-        <?php wp_nonce_field($this->option_name); ?>
+        <?php wp_nonce_field($this->option); ?>
 
         <table class="form-table">
             <tr valign="top">

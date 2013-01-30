@@ -23,8 +23,8 @@ class Analytics_Wordpress {
     const NAME    = 'Analytics Wordpress';
     const VERSION = '0.0.1';
 
-    private $option_name = 'analytics_wordpress_options';
-    private $defaults    = array(
+    private $option   = 'analytics_wordpress_options';
+    private $defaults = array(
         'api_key' => ''
     );
 
@@ -33,12 +33,13 @@ class Analytics_Wordpress {
     // -----
 
     public function __construct() {
-        // Setup our Wordpress hooks.
+        // Setup our Wordpress hooks. Use a slightly higher priority for the
+        // analytics Javascript includes.
         if (is_admin()) {
             add_action('admin_menu', array(&$this, 'render_settings_menu_item'));
         } else {
-            add_action('wp_head', array(&$this, 'render_snippet'));
-            add_action('wp_footer', array(&$this, 'render_identify'));
+            add_action('wp_head', array(&$this, 'render_snippet'), 9);
+            add_action('wp_footer', array(&$this, 'render_identify'), 9);
         }
 
         // Make sure our settings object exists and is backed by our defaults.
@@ -53,11 +54,11 @@ class Analytics_Wordpress {
     // ---------
 
     private function get_settings() {
-        return get_option($this->option_name);
+        return get_option($this->option);
     }
 
     private function set_settings($settings) {
-        return update_option($this->option_name, $settings);
+        return update_option($this->option, $settings);
     }
 
 
@@ -86,7 +87,7 @@ class Analytics_Wordpress {
         $settings = $this->get_settings();
 
         // If we're saving and the nonce matches, update our settings.
-        if (isset($_POST['submit']) && check_admin_referer($this->option_name)) {
+        if (isset($_POST['submit']) && check_admin_referer($this->option)) {
             $settings['api_key'] = $_POST['api_key'];
             $this->set_settings($settings);
         }
@@ -115,4 +116,5 @@ class Analytics_Wordpress {
 
 }
 
+// Kick it off.
 $analytics_wordpress = new Analytics_Wordpress();
