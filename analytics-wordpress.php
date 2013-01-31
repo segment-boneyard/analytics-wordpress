@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Analytics for Wordpress
+Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 

@@ -1,4 +1,4 @@
-=== Analytics for WordPress ===
+=== Analytics for WordPress — by Segment.io ===
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.2
@@ -14,15 +14,15 @@ Analytic for WordPress is the easiest way to integrate analytics into your WordP
 
 Analytics for WordPress is the easiest way to integrate analytics into your WordPress site.
 
-By installing Segment.io's **Analytics for WordPress** plugin you can add any analytics service to your site without touching any code. 
+By installing Segment.io's WordPress plugin you can add any analytics service to your site without touching any code. 
 Segment.io lets you send your analytics data to Google Analytics, Mixpanel, KISSmetrics, and more... without having to integrate with each and every one, saving you time. Once you're setup, you can swap and add new analytics services with the click of a button!
 
 
 == Installation ==
 
 1. Upload the `analytics-wordpress` folder to the `/wp-content/plugins/` directory.
-1. Activate **Analytics for WordPress** through the 'Plugins' menu in WordPress.
-1. Go to **Settings > Analytics** and enter you Segment.io API key.
+1. Activate the plugin on your Admin **Plugins** page in WordPress.
+1. Go to **Settings > Analytics** and enter your Segment.io API key.
 1. That's it! You can now turn on analytics services with the click of a button in the Segment.io interface.
 
 
@@ -44,7 +44,8 @@ We automatically record the different types of WordPress pages your users can vi
 == Changelog ==
 
 = 0.2.0 =
-* Added automatic recording of different page types.
+* Added identifying commenters.
+* Added tracking events for different page types.
 * Bug fixes.
 
 = 0.1.0 =
