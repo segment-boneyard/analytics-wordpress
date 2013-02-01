@@ -4,7 +4,7 @@ Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
-Version: 0.2.1
+Version: 0.3.0
 License: GPLv2
 
 Author: Segment.io
@@ -18,11 +18,42 @@ http://markjaquith.wordpress.com/2006/06/02/wordpress-203-nonces/
 http://teleogistic.net/2011/05/revisiting-git-github-and-the-wordpress-org-plugin-repository/
 */
 
+
+// The public analytics methods, in case you want to reference them in other
+// parts of your WordPress code.
+class Analytics {
+
+    // Render the Segment.io Javascript snippet.
+    public function initialize($settings) {
+        if (!isset($settings['api_key']) || $settings['api_key'] == '') return;
+
+        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/snippet.php');
+    }
+
+    // Render a Javascript `identify` call.
+    public function identify($user_id, $traits = false) {
+        if (!$user_id) return;
+
+        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/identify.php');
+    }
+
+    // Render a Javascript `track` call.
+    public function track($event, $properties = false) {
+        if (!$event) return;
+
+        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/track.php');
+    }
+
+}
+
+
+// The plugin itself, which automatically identifies users and commenters and
+// tracks different types of page view events.
 class Analytics_Wordpress {
 
     const ID      = 'analytics-wordpress';
     const NAME    = 'Analytics Wordpress';
-    const VERSION = '0.2.1';
+    const VERSION = '0.3.0';
 
     private $option   = 'analytics_wordpress_options';
     private $defaults = array(
@@ -41,7 +72,6 @@ class Analytics_Wordpress {
             add_action('wp_footer', array(&$this, 'wp_footer'), 9);
         }
 
-
         // Make sure our settings object exists and is backed by our defaults.
         $settings = $this->get_settings();
         if (!is_array($settings)) $settings = array();
@@ -50,23 +80,22 @@ class Analytics_Wordpress {
     }
 
 
-
     // Hooks
     // -----
 
     public function wp_head() {
         // Render the snippet.
-        $this->render_snippet($this->get_settings());
+        Analytics::initialize($this->get_settings());
     }
 
     public function wp_footer() {
         // Identify the user if the current user merits it.
         $identify = $this->get_current_user_identify();
-        if ($identify) $this->render_identify($identify['user_id'], $identify['traits']);
+        if ($identify) Analytics::identify($identify['user_id'], $identify['traits']);
 
         // Track a custom page view event if the current page merits it.
         $track = $this->get_current_page_track();
-        if ($track) $this->render_track($track['event'], $track['properties']);
+        if ($track) Analytics::track($track['event'], $track['properties']);
     }
 
     public function plugin_action_links($links, $file) {
@@ -120,33 +149,6 @@ class Analytics_Wordpress {
 
         include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/settings.php');
     }
-
-
-
-    // Renderers
-    // ---------
-
-    // Render the Segment.io Javascript snippet.
-    private function render_snippet($settings) {
-        if (!isset($settings['api_key']) || $settings['api_key'] == '') return;
-
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/snippet.php');
-    }
-
-    // Render a Javascript `identify` call.
-    private function render_identify($user_id, $traits = false) {
-        if (!$user_id) return;
-
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/identify.php');
-    }
-
-    // Render a Javascript `track` call.
-    private function render_track($event, $properties = false) {
-        if (!$event) return;
-
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/track.php');
-    }
-
 
 
     // Getters + Setters
@@ -284,7 +286,6 @@ class Analytics_Wordpress {
 
         return $track;
     }
-
 
 
     // Utils
