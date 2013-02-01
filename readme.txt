@@ -1,9 +1,9 @@
 === Analytics for WordPress — by Segment.io ===
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
-Requires at least: 3.2
+Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,8 +14,11 @@ Analytic for WordPress is the easiest way to integrate analytics into your WordP
 
 Analytics for WordPress is the easiest way to integrate analytics into your WordPress site.
 
-By installing Segment.io's WordPress plugin you can add any analytics service to your site without touching any code. 
-Segment.io lets you send your analytics data to Google Analytics, Mixpanel, KISSmetrics, and more... without having to integrate with each and every one, saving you time. Once you're setup, you can swap and add new analytics services with the click of a button!
+By installing Segment.io's WordPress plugin you can add any analytics service to your site without touching any code.
+
+Segment.io lets you send your analytics data to Google Analytics, Mixpanel, KISSmetrics, Chartbeat, and more... without having to integrate with each and every one, saving you time.
+
+Once you're setup, you can swap and add new analytics services with the click of a button!
 
 
 == Installation ==
