@@ -4,7 +4,7 @@ Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
-Version: 0.3.1
+Version: 0.3.2
 License: GPLv2
 
 Author: Segment.io
@@ -27,21 +27,21 @@ class Analytics {
     public function initialize($settings) {
         if (!isset($settings['api_key']) || $settings['api_key'] == '') return;
 
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/snippet.php');
+        include(plugin_dir_path(__FILE__) . 'templates/snippet.php');
     }
 
     // Render a Javascript `identify` call.
     public function identify($user_id, $traits = false) {
         if (!$user_id) return;
 
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/identify.php');
+        include(plugin_dir_path(__FILE__) . 'templates/identify.php');
     }
 
     // Render a Javascript `track` call.
     public function track($event, $properties = false) {
         if (!$event) return;
 
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/track.php');
+        include(plugin_dir_path(__FILE__) . 'templates/track.php');
     }
 
 }
@@ -51,9 +51,8 @@ class Analytics {
 // tracks different types of page view events.
 class Analytics_Wordpress {
 
-    const ID      = 'analytics-wordpress';
-    const NAME    = 'Analytics Wordpress';
-    const VERSION = '0.3.1';
+    const SLUG    = 'analytics';
+    const VERSION = '0.3.2';
 
     private $option   = 'analytics_wordpress_options';
     private $defaults = array(
@@ -104,7 +103,7 @@ class Analytics_Wordpress {
         if ($file != plugin_basename(__FILE__)) return $links;
 
         // Add settings link to the beginning of the row of links.
-        $settings_link = '<a href="options-general.php?page=' . self::ID .'">Settings</a>';
+        $settings_link = '<a href="options-general.php?page=' . self::SLUG . '">Settings</a>';
         array_unshift($links, $settings_link);
         return $links;
     }
@@ -115,7 +114,7 @@ class Analytics_Wordpress {
         if ($file != plugin_basename(__FILE__)) return $links;
 
         // Add a settings and docs link to the end of the row of links row of links.
-        $settings_link = '<a href="options-general.php?page=' . self::ID .'">Settings</a>';
+        $settings_link = '<a href="options-general.php?page=' . self::SLUG . '">Settings</a>';
         $docs_link = '<a href="https://segment.io/plugins/wordpress" target="_blank">Docs</a>';
         array_push($links, $settings_link, $docs_link);
         return $links;
@@ -125,10 +124,10 @@ class Analytics_Wordpress {
         // Render an "Analytics" menu item in the "Settings" menu.
         // http://codex.wordpress.org/Function_Reference/add_options_page
         add_options_page(
-            'Analytics',                   // Page Title
-            'Analytics',                   // Menu Title
-            'manage_options',              // Capability Required
-            'analytics-wordpress',         // Menu Slug
+            'Analytics',                // Page Title
+            'Analytics',                // Menu Title
+            'manage_options',           // Capability Required
+            self::SLUG,                 // Menu Slug
             array(&$this, 'admin_page') // Function
         );
     }
@@ -147,7 +146,7 @@ class Analytics_Wordpress {
             $this->set_settings($settings);
         }
 
-        include(WP_PLUGIN_DIR . '/analytics-wordpress/templates/settings.php');
+        include(plugin_dir_path(__FILE__) . 'templates/settings.php');
     }
 
 
