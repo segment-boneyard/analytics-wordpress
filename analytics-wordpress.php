@@ -29,14 +29,17 @@ class Analytics_Wordpress {
     );
 
     public function __construct() {
-        // Setup our Wordpress hooks. Use a slightly higher priority for the
-        // analytics Javascript includes.
+        // Setup our Wordpress hooks, using a slightly higher priority for the
+        // analytics Javascript includes in the header and footer.
         if (is_admin()) {
             add_action('admin_menu', array(&$this, 'admin_menu'));
+            add_filter('plugin_action_links', array(&$this, 'plugin_action_links'), 10, 2);
+            add_filter('plugin_row_meta', array(&$this, 'plugin_row_meta'), 10, 2);
         } else {
             add_action('wp_head', array(&$this, 'wp_head'), 9);
             add_action('wp_footer', array(&$this, 'wp_footer'), 9);
         }
+
 
         // Make sure our settings object exists and is backed by our defaults.
         $settings = $this->get_settings();
@@ -63,6 +66,29 @@ class Analytics_Wordpress {
         // Track a custom page view event if the current page merits it.
         $track = $this->get_current_page_track();
         if ($track) $this->render_track($track['event'], $track['properties']);
+    }
+
+    public function plugin_action_links($links, $file) {
+        // Not for other plugins, silly. NOTE: This doesn't work properly when
+        // the plugin for testing is a symlink!! If you change this, test it.
+        if ($file != plugin_basename(__FILE__)) return $links;
+
+        // Add settings link to the beginning of the row of links.
+        $settings_link = '<a href="options-general.php?page=' . self::ID .'">Settings</a>';
+        array_unshift($links, $settings_link);
+        return $links;
+    }
+
+    public function plugin_row_meta($links, $file) {
+        // Not for other plugins, silly. NOTE: This doesn't work properly when
+        // the plugin for testing is a symlink!! If you change this, test it.
+        if ($file != plugin_basename(__FILE__)) return $links;
+
+        // Add a settings and docs link to the end of the row of links row of links.
+        $settings_link = '<a href="options-general.php?page=' . self::ID .'">Settings</a>';
+        $docs_link = '<a href="https://segment.io/plugins/wordpress">Docs</a>';
+        array_push($links, $settings_link, $docs_link);
+        return $links;
     }
 
     public function admin_menu() {
