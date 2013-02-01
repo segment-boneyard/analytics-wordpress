@@ -165,9 +165,12 @@ class Analytics_Wordpress {
     // to record an `identify` call. Since commenters don't have IDs, we
     // identify everyone by their email address.
     private function get_current_user_identify() {
+        $user = wp_get_current_user();
+        $commenter = wp_get_current_commenter();
+
         // We've got a logged-in user.
         // http://codex.wordpress.org/Function_Reference/wp_get_current_user
-        if (is_user_logged_in() && $user = wp_get_current_user()) {
+        if (is_user_logged_in() && $user) {
             $identify = array(
                 'user_id' => $user->user_email,
                 'traits'  => array(
@@ -182,7 +185,7 @@ class Analytics_Wordpress {
         }
         // We've got a commenter.
         // http://codex.wordpress.org/Function_Reference/wp_get_current_commenter
-        else if ($commenter = wp_get_current_commenter()) {
+        else if ($commenter) {
             $identify = array(
                 'user_id' => $commenter['comment_author_email'],
                 'traits'  => array(
