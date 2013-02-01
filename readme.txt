@@ -32,7 +32,7 @@ Segment.io lets you send your analytics data to Google Analytics, Mixpanel, KISS
 Tons! Google Analytics, Mixpanel, KISSmetrics, Chartbeat, Clicky, Intercom, CrazyEgg, Customer.io, Gauges, GoSquared, HubSpot, Marketo, Olark, Quantcast, Vero, and more... You can check out [the full list](https://segment.io/integrations).
 
 = What user information does it record automatically? =
-Yup! The plugin automatically identifies users that are logged in to your WordPress site, and records their `name`, `email`, `username`, and `website`, so you don't need to write any special code to handle that yourself. It also records data about commenters, if available.
+We automatically identify users that are logged in to your WordPress site, and records their `name`, `email`, `username`, and `website`, so you don't need to write any special code to handle that yourself. It also identifies commenters if it can.
 
 = Which actions does it record automatically? =
 We automatically record the different types of WordPress pages your users can visit. Things like "View About Page", "View Post", "View Author Page", etc. So you don't have to worry about recording them yourself. Just by enabling the plugin you'll already be recording all of those actions.
