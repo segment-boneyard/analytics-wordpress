@@ -47,7 +47,7 @@ We automatically record the different types of WordPress pages your users can vi
 == Changelog ==
 
 = 0.3.2 =
-* Fixed bug that occured when installing from WordPress Plugin Repository.
+* Fixed bug that occured when installing straight from WordPress admin.
 
 = 0.3.0 =
 * Exposed a global `Analytics` class for custom tracking.
