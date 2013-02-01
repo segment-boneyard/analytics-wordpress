@@ -15,6 +15,7 @@ References:
 https://github.com/convissor/oop-plugin-template-solution
 http://planetozh.com/blog/2009/09/top-10-most-common-coding-mistakes-in-wordpress-plugins/
 http://markjaquith.wordpress.com/2006/06/02/wordpress-203-nonces/
+http://teleogistic.net/2011/05/revisiting-git-github-and-the-wordpress-org-plugin-repository/
 */
 
 class Analytics_Wordpress {
