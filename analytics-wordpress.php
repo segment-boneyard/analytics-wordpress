@@ -86,7 +86,7 @@ class Analytics_Wordpress {
 
         // Add a settings and docs link to the end of the row of links row of links.
         $settings_link = '<a href="options-general.php?page=' . self::ID .'">Settings</a>';
-        $docs_link = '<a href="https://segment.io/plugins/wordpress">Docs</a>';
+        $docs_link = '<a href="https://segment.io/plugins/wordpress" target="_blank">Docs</a>';
         array_push($links, $settings_link, $docs_link);
         return $links;
     }
