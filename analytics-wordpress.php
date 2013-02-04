@@ -4,7 +4,7 @@ Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
-Version: 0.3.2
+Version: 0.3.3
 License: GPLv2
 
 Author: Segment.io
@@ -52,7 +52,7 @@ class Analytics {
 class Analytics_Wordpress {
 
     const SLUG    = 'analytics';
-    const VERSION = '0.3.2';
+    const VERSION = '0.3.3';
 
     private $option   = 'analytics_wordpress_options';
     private $defaults = array(
@@ -292,6 +292,9 @@ class Analytics_Wordpress {
 
     // Removes any empty keys in an array.
     private function clean_array($array) {
+        // In case they pass in some weird stuff.
+        if (!is_array($array)) return $array;
+
         foreach ($array as $key => $value) {
             if ($array[$key] == '') unset($array[$key]);
         }
