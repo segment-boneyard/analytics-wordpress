@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
 Tested up to: 3.5
-Stable tag: 0.3.2
+Stable tag: 0.3.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,8 +46,11 @@ We automatically record the different types of WordPress pages your users can vi
 
 == Changelog ==
 
+= 0.3.3 =
+* Fixed a bug that occured on uncommon page types.
+
 = 0.3.2 =
-* Fixed bug that occured when installing from WordPress Plugin Repository.
+* Fixed a bug that occured when installing straight from WordPress admin.
 
 = 0.3.0 =
 * Exposed a global `Analytics` class for custom tracking.
