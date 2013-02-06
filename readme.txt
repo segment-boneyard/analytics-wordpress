@@ -2,8 +2,8 @@
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
-Tested up to: 3.5
-Stable tag: 0.3.3
+Tested up to: 3.5.1
+Stable tag: 0.4.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,11 +40,17 @@ We automatically identify users that are logged in to your WordPress site, and r
 = Which actions does it record automatically? =
 We automatically record the different types of WordPress pages your users can visit. Things like "View About Page", "View Post", "View Author Page", etc. So you don't have to worry about recording them yourself. Just by enabling the plugin you'll already be recording all of those actions.
 
+= Can I turn off the automatic event tracking? =
+Yup! You can also turn off specific events, in case you only want a few.
+
 
 == Screenshots ==
 
 
 == Changelog ==
+
+= 0.4.0 =
+* Added settings to turn off automatic event tracking.
 
 = 0.3.3 =
 * Fixed a bug that occured on uncommon page types.
