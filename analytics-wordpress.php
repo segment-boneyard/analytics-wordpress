@@ -4,7 +4,7 @@ Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
-Version: 0.3.3
+Version: 0.4.0
 License: GPLv2
 
 Author: Segment.io
@@ -52,11 +52,23 @@ class Analytics {
 class Analytics_Wordpress {
 
     const SLUG    = 'analytics';
-    const VERSION = '0.3.3';
+    const VERSION = '0.4.0';
 
     private $option   = 'analytics_wordpress_options';
     private $defaults = array(
-        'api_key' => ''
+        // Your Segment.io API key that we'll use to initialize analytics.js.
+        'api_key' => '',
+        // Whether or not we should track events for posts. This also includes
+        // custom post types, for example a Product post type.
+        'track_posts' => true,
+        // Whether or not we should track events for pages. This includes the
+        // Home page and things like the About page, Contact page, etc.
+        'track_pages' => true,
+        // Whether or not we should track custom events for archive pages like
+        // the Category archive or the Author archive.
+        'track_archives' => true,
+        // Whether or not we should track custom events for the Search page.
+        'track_searches' => true
     );
 
     public function __construct() {
@@ -141,8 +153,14 @@ class Analytics_Wordpress {
         $settings = $this->get_settings();
 
         // If we're saving and the nonce matches, update our settings.
+        // Checkboxes have a value of 1, so either they're sent or not?
         if (isset($_POST['submit']) && check_admin_referer($this->option)) {
-            $settings['api_key'] = $_POST['api_key'];
+            $settings['api_key']        = $_POST['api_key'];
+            $settings['track_posts']    = isset($_POST['track_posts']) ? true : false;
+            $settings['track_pages']    = isset($_POST['track_pages']) ? true : false;
+            $settings['track_archives'] = isset($_POST['track_archives']) ? true : false;
+            $settings['track_searches'] = isset($_POST['track_searches']) ? true : false;
+
             $this->set_settings($settings);
         }
 
@@ -211,74 +229,96 @@ class Analytics_Wordpress {
     // confusing depending on what type of page it is... so reference this:
     // http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
     private function get_current_page_track() {
-        // The front page of their site, whether it's a page or a list of
-        // recent blog entries. `is_home` only works if it's not a page, that's
-        // why we don't use it.
-        if (is_front_page()) {
-            $track = array(
-                'event' => 'View Home Page'
-            );
+        $settings = $this->get_settings();
+
+        // Posts
+        // -----
+        if ($settings['track_posts']) {
+            // A post or a custom post. `is_single` also returns attachments, so
+            // we filter those out. The event name is based on the post's type,
+            // and is uppercased.
+            if (is_single() && !is_attachment()) {
+                $track = array(
+                    'event'      => 'Viewed ' . ucfirst(get_post_type()),
+                    'properties' => array(
+                        'title' => single_post_title('', false)
+                    )
+                );
+            }
         }
-        // A normal WordPress page.
-        else if (is_page()) {
-            $track = array(
-                'event' => 'View ' . single_post_title('', false) . ' Page'
-            );
+
+        // Pages
+        // -----
+        if ($settings['track_pages']) {
+            // The front page of their site, whether it's a page or a list of
+            // recent blog entries. `is_home` only works if it's not a page,
+            // that's why we don't use it.
+            if (is_front_page()) {
+                $track = array(
+                    'event' => 'Viewed Home Page'
+                );
+            }
+            // A normal WordPress page.
+            else if (is_page()) {
+                $track = array(
+                    'event' => 'Viewed ' . single_post_title('', false) . ' Page'
+                );
+            }
         }
-        // An author archive page. Check the `wp_title` docs to see how they get
-        // the title of the page, cuz it's weird.
-        // http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
-        else if (is_author()) {
-            $author = get_queried_object();
-            $track = array(
-                'event'      => 'View Author Page',
-                'properties' => array(
-                    'author' => $author->display_name
-                )
-            );
+
+        // Archives
+        // --------
+        if ($settings['track_archives']) {
+            // An author archive page. Check the `wp_title` docs to see how they
+            // get the title of the page, cuz it's weird.
+            // http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
+            if (is_author()) {
+                $author = get_queried_object();
+                $track = array(
+                    'event'      => 'Viewed Author Page',
+                    'properties' => array(
+                        'author' => $author->display_name
+                    )
+                );
+            }
+            // A tag archive page. Use `single_tag_title` to get the name.
+            // http://codex.wordpress.org/Function_Reference/single_tag_title
+            else if (is_tag()) {
+                $track = array(
+                    'event'      => 'Viewed Tag Page',
+                    'properties' => array(
+                        'tag' => single_tag_title('', false)
+                    )
+                );
+            }
+            // A category archive page. Use `single_cat_title` to get the name.
+            // http://codex.wordpress.org/Function_Reference/single_cat_title
+            else if (is_category()) {
+                $track = array(
+                    'event'      => 'Viewed Category Page',
+                    'properties' => array(
+                        'category' => single_cat_title('', false)
+                    )
+                );
+            }
         }
-        // A tag archive page. Use `single_tag_title` to get the name.
-        // http://codex.wordpress.org/Function_Reference/single_tag_title
-        else if (is_tag()) {
-            $track = array(
-                'event'      => 'View Tag Page',
-                'properties' => array(
-                    'tag' => single_tag_title('', false)
-                )
-            );
+
+        // Searches
+        // --------
+        if ($settings['track_searches']) {
+            // The search page.
+            if (is_search()) {
+                $track = array(
+                    'event'      => 'Viewed Search Page',
+                    'properties' => array(
+                        'query' => get_query_var('s')
+                    )
+                );
+            }
         }
-        // A category archive page. Use `single_cat_title` to get the name.
-        // http://codex.wordpress.org/Function_Reference/single_cat_title
-        else if (is_category()) {
-            $track = array(
-                'event'      => 'View Category Page',
-                'properties' => array(
-                    'category' => single_cat_title('', false)
-                )
-            );
-        }
-        // The search page.
-        else if (is_search()) {
-            $track = array(
-                'event'      => 'View Search Page',
-                'properties' => array(
-                    'query' => get_query_var('s')
-                )
-            );
-        }
-        // A post or a custom post. `is_single` also returns attachments, so we
-        // filter those out. The event name is based on the post's type, and is
-        // uppercased.
-        else if (is_single() && !is_attachment()) {
-            $track = array(
-                'event'      => 'View ' . ucfirst(get_post_type()),
-                'properties' => array(
-                    'title' => single_post_title('', false)
-                )
-            );
-        }
+
         // We don't have a page we want to track.
-        else return false;
+        if (!isset($track)) return false;
 
         // Clean out empty properties before sending it back.
         $track['properties'] = $this->clean_array($track['properties']);
