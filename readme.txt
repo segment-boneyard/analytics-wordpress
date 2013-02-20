@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 0.4.1
+Stable tag: 0.4.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,11 +23,12 @@ Once you're setup, you can swap and add new analytics services with the click of
 
 == Installation ==
 
-1. Go to the **Plugins > Add New*** page in your WordPress admin.
+1. Go to the **Plugins > Add New** page in your WordPress admin.
 1. Search for "Segment.io" and install **Analytics for WordPress — by Segment.io**.
 1. Click **Activate Plugin**.
 1. Go to **Settings > Analytics** and enter your Segment.io API key. (If you haven't signed up for Segment.io yet, now's the time!)
-1. That's it! You can now turn on any analytics service with the click of a button in the Segment.io interface.
+
+That's it! You can now turn on any analytics service with the click of a button in the Segment.io interface.
 
 
 == Frequently Asked Questions ==
