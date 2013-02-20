@@ -23,7 +23,7 @@ Once you're setup, you can swap and add new analytics services with the click of
 
 == Installation ==
 
-1. Go to the **Plugins > Add New*** page in your WordPress admin.
+1. Go to the **Plugins > Add New** page in your WordPress admin.
 1. Search for "Segment.io" and install **Analytics for WordPress — by Segment.io**.
 1. Click **Activate Plugin**.
 1. Go to **Settings > Analytics** and enter your Segment.io API key. (If you haven't signed up for Segment.io yet, now's the time!)
