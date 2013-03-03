@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 0.4.2
+Stable tag: 0.4.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,9 @@ Yup! You can also turn off specific events, in case you only want a few.
 
 
 == Changelog ==
+
+= 0.4.3 =
+* Made our page view events `noninteraction` in Google Analytics.
 
 = 0.4.0 =
 * Added settings to turn off automatic event tracking.
