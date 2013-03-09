@@ -58,6 +58,9 @@ class Analytics_Wordpress {
     private $defaults = array(
         // Your Segment.io API key that we'll use to initialize analytics.js.
         'api_key' => '',
+        // Whether or not we should ignore users of a certain level. For example
+        // 11 ignores no-one, 8 would ignore Administrator users
+        'ignore_userlevel' => 11,
         // Whether or not we should track events for posts. This also includes
         // custom post types, for example a Product post type.
         'track_posts' => true,
@@ -156,6 +159,7 @@ class Analytics_Wordpress {
         // Checkboxes have a value of 1, so either they're sent or not?
         if (isset($_POST['submit']) && check_admin_referer($this->option)) {
             $settings['api_key']        = $_POST['api_key'];
+            $settings['ignore_userlevel'] = $_POST['ignore_userlevel'];
             $settings['track_posts']    = isset($_POST['track_posts']) ? true : false;
             $settings['track_pages']    = isset($_POST['track_pages']) ? true : false;
             $settings['track_archives'] = isset($_POST['track_archives']) ? true : false;
@@ -185,7 +189,10 @@ class Analytics_Wordpress {
     // to record an `identify` call. Since commenters don't have IDs, we
     // identify everyone by their email address.
     private function get_current_user_identify() {
+        $settings = $this->get_settings();
         $user = wp_get_current_user();
+        if ( ( $user->user_level >= $settings["ignore_userlevel"] ) )
+            return false;
         $commenter = wp_get_current_commenter();
 
         // We've got a logged-in user.
@@ -230,6 +237,18 @@ class Analytics_Wordpress {
     // http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
     private function get_current_page_track() {
         $settings = $this->get_settings();
+
+        // Ignore Users
+        // -----
+        if ($settings['ignore_userlevel']) {
+            // A post or a custom post. `is_single` also returns attachments, so
+            // we filter those out. The event name is based on the post's type,
+            // and is uppercased.
+            $user = wp_get_current_user();
+            if ( ( $user->user_level >= $settings["ignore_userlevel"] ) )
+                return false;
+
+        }
 
         // Posts
         // -----
