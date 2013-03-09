@@ -45,6 +45,24 @@
 
         <table class="form-table">
             <tr valign="top">
+                <th valign="top" scrope="row">
+                  <label for="ignore_userlevel">Ignore users:</label>
+                </th>
+                <td>
+                  <fieldset>
+                    <select class="select" name="ignore_userlevel" id="ignore_userlevel">
+                      <option value="11"<?php if ($settings['ignore_userlevel']==11) echo ' selected="selected"'; ?>>Ignore no-one</option>
+                      <option value="8"<?php if ($settings['ignore_userlevel']==8) echo ' selected="selected"'; ?>>Administrator</option>
+                      <option value="5"<?php if ($settings['ignore_userlevel']==5) echo ' selected="selected"'; ?>>Editor</option>
+                      <option value="2"<?php if ($settings['ignore_userlevel']==2) echo ' selected="selected"'; ?>>Author</option>
+                      <option value="1"<?php if ($settings['ignore_userlevel']==1) echo ' selected="selected"'; ?>>Contributor</option>
+                      <option value="0"<?php if ($settings['ignore_userlevel']==0) echo ' selected="selected"'; ?>>Subscriber (ignores all logged in users)</option>
+                    </select>
+                    <p class="description">Users of the role you select and higher will be ignored, so if you select Editor, all Editors and Administrators will be ignored.</p>
+                  </fieldset>
+                </td>
+              </tr>
+            <tr valign="top">
                 <th scope="row">
                     <label for="track_posts">Track Posts</label>
                 </th>
