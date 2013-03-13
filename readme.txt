@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 0.4.3
+Stable tag: 0.5.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,11 +45,17 @@ We automatically record the different types of WordPress pages your users can vi
 = Can I turn off the automatic event tracking? =
 Yup! You can also turn off specific events, in case you only want a few.
 
+= Can I ignore logged-in users? =
+Yup! You can even _just_ ignore Administrators or Editors too.
+
 
 == Screenshots ==
 
 
 == Changelog ==
+
+= 0.5.0 =
+* Added setting to ignore users by permission level (eg. Administrators).
 
 = 0.4.3 =
 * Made our page view events `noninteraction` in Google Analytics.
