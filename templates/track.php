@@ -1,3 +1,3 @@
 <script type="text/javascript">
-    analytics.track(<?php echo "'" . $event . "'"; if ($properties) echo ', ' . json_encode($properties); ?>);
+  analytics.track(<?php echo "'" . $event . "'"; if ($properties) echo ', ' . json_encode($properties); ?>);
 </script>
