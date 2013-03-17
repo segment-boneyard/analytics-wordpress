@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 0.5.0
+Stable tag: 0.5.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,9 @@ Yup! You can even _just_ ignore Administrators or Editors too.
 
 
 == Changelog ==
+
+= 0.5.1 =
+* Fixed a bug where the user permission level would be output.
 
 = 0.5.0 =
 * Added setting to ignore users by permission level (eg. Administrators).
