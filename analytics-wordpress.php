@@ -4,7 +4,7 @@ Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
-Version: 0.5.1
+Version: 0.5.2
 License: GPLv2
 
 Author: Segment.io
@@ -30,14 +30,24 @@ class Analytics {
   }
 
   // Render a Javascript `identify` call.
-  public function identify($user_id, $traits = false) {
+  public function identify($user_id, $traits = array(), $options = array()) {
+    // A user ID is required.
     if (!$user_id) return;
+
+    // Set the proper `library` option so we know where the API calls come from.
+    $options['library'] = 'analytics-wordpress';
+
     include(plugin_dir_path(__FILE__) . 'templates/identify.php');
   }
 
   // Render a Javascript `track` call.
-  public function track($event, $properties = false) {
+  public function track($event, $properties = array(), $options = array()) {
+    // An event is required.
     if (!$event) return;
+
+    // Set the proper `library` option so we know where the API calls come from.
+    $options['library'] = 'analytics-wordpress';
+
     include(plugin_dir_path(__FILE__) . 'templates/track.php');
   }
 
