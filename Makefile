@@ -1,8 +1,8 @@
 
 # Open the WordPress site and admin.
 test:
-		open http://localhost:8888/wp-admin/options-general.php?page=analytics-wordpress
-		open http://localhost:8888/
+		open http://localhost:8888/analytics-wordpress/test/wp-admin/options-general.php?page=analytics-wordpress
+		open http://localhost:8888/analytics-wordpress/test/
 
 # Turns the testing plugin into a real folder, for more accurate testing.
 test-folder:
