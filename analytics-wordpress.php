@@ -4,7 +4,7 @@ Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your Wordpress site.
 
-Version: 0.5.3
+Version: 0.5.4
 License: GPLv2
 
 Author: Segment.io
@@ -24,8 +24,10 @@ http://teleogistic.net/2011/05/revisiting-git-github-and-the-wordpress-org-plugi
 class Analytics {
 
   // Render the Segment.io Javascript snippet.
-  public function initialize($settings) {
+  public function initialize($settings, $ignore = false) {
+    // An API key is required.
     if (!isset($settings['api_key']) || $settings['api_key'] == '') return;
+
     include(plugin_dir_path(__FILE__) . 'templates/snippet.php');
   }
 
@@ -59,7 +61,7 @@ class Analytics {
 class Analytics_Wordpress {
 
   const SLUG    = 'analytics';
-  const VERSION = '0.5.3';
+  const VERSION = '0.5.4';
 
   private $option   = 'analytics_wordpress_options';
   private $defaults = array(
@@ -105,8 +107,14 @@ class Analytics_Wordpress {
   // -----
 
   public function wp_head() {
+    // Figure out whether the user should be ignored or not.
+    $ignore = false;
+    $settings = $this->get_settings();
+    $user = wp_get_current_user();
+    if (($user->user_level >= $settings['ignore_user_level'])) $ignore = true;
+
     // Render the snippet.
-    Analytics::initialize($this->get_settings());
+    Analytics::initialize($this->get_settings(), $ignore);
   }
 
   public function wp_footer() {
@@ -200,10 +208,6 @@ class Analytics_Wordpress {
     $user = wp_get_current_user();
     $commenter = wp_get_current_commenter();
 
-    // If our user's permissions level is greater than or equal to our
-    // ignored level, get out of here.
-    if (($user->user_level >= $settings['ignore_user_level'])) return false;
-
     // We've got a logged-in user.
     // http://codex.wordpress.org/Function_Reference/wp_get_current_user
     if (is_user_logged_in() && $user) {
@@ -246,11 +250,6 @@ class Analytics_Wordpress {
   // http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
   private function get_current_page_track() {
     $settings = $this->get_settings();
-    $user = wp_get_current_user();
-
-    // If our user's permissions level is greater than or equal to our
-    // ignored level, get out of here.
-    if (($user->user_level >= $settings['ignore_user_level'])) return false;
 
     // Posts
     // -----
@@ -286,6 +285,8 @@ class Analytics_Wordpress {
         );
       }
     }
+    // We don't have a user.
+    else return false;
 
     // Archives
     // --------
