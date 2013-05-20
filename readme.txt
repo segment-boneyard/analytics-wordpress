@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 0.5.3
+Stable tag: 0.5.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,9 @@ Yup! You can even _just_ ignore Administrators or Editors too.
 
 
 == Changelog ==
+
+= 0.5.4 =
+* Fixed a bug where admins weren't being properly ignored.
 
 = 0.5.3 =
 * Fixed a bug that occured in older versions of PHP.
