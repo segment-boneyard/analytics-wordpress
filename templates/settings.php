@@ -59,7 +59,7 @@
               <option value="5"<?php if ($settings['ignore_user_level'] == 5) echo ' selected="selected"'; ?>>Editors and Up</option>
               <option value="2"<?php if ($settings['ignore_user_level'] == 2) echo ' selected="selected"'; ?>>Authors and Up</option>
               <option value="1"<?php if ($settings['ignore_user_level'] == 1) echo ' selected="selected"'; ?>>Contributors and Up</option>
-              <option value="0"<?php if ($settings['ignore_user_level'] == 0) echo ' selected="selected"'; ?>>All Logged-in Users</option>
+              <option value="0"<?php if ($settings['ignore_user_level'] == 0) echo ' selected="selected"'; ?>>Everyone!</option>
             </select>
             <p class="description">Users of the role you select and higher will
               be ignored.</p>
