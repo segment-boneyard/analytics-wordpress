@@ -275,7 +275,7 @@ class Segment_IO_Analytics_WordPress {
 
 	// Get our plugin's settings.
 	private function get_settings() {
-		return get_option( $this->option );
+		return apply_filters( 'segment_io_get_settings', get_option( $this->option ) );
 	}
 
 	// Store new settings for our plugin.
@@ -288,6 +288,7 @@ class Segment_IO_Analytics_WordPress {
 	// identify everyone by their email address.
 	private function get_current_user_identify() {
 		$settings  = $this->get_settings();
+		
 		$user      = wp_get_current_user();
 		$commenter = wp_get_current_commenter();
 		$identify  = false;
@@ -322,10 +323,10 @@ class Segment_IO_Analytics_WordPress {
 
 		if ( $identify ) {
 			// Clean out empty traits before sending it back.
-			$identify['traits'] = $this->clean_array( $identify['traits'] );
+			$identify['traits'] = array_filter( $identify['traits'] );
 		}
 
-		return $identify;
+		return apply_filters( 'segment_io_get_current_user_identify', $identify, $settings, $this );
 	}
 
 	// Based on the current page, get the event and properties that should be
@@ -342,7 +343,7 @@ class Segment_IO_Analytics_WordPress {
 			// A post or a custom post. `is_single` also returns attachments, so
 			// we filter those out. The event name is based on the post's type,
 			// and is uppercased.
-			if ( is_single() && !is_attachment() ) {
+			if ( is_single() && ! is_attachment() ) {
 				$track = array(
 					'event'      => 'Viewed ' . ucfirst( get_post_type() ),
 					'properties' => array(
@@ -424,17 +425,19 @@ class Segment_IO_Analytics_WordPress {
 
 		// We don't have a page we want to track.
 		if ( ! isset( $track ) ) {
-			return false;
+			$track = false;
 		}
 
-		// All of these are checking for pages, and we don't want that to throw
-		// off Google Analytics's bounce rate, so mark them `noninteraction`.
-		$track['properties']['noninteraction'] = true;
+		if ( $track ) {
+			// All of these are checking for pages, and we don't want that to throw
+			// off Google Analytics's bounce rate, so mark them `noninteraction`.
+			$track['properties']['noninteraction'] = true;
 
-		// Clean out empty properties before sending it back.
-		$track['properties'] = $track['properties'];
+			// Clean out empty properties before sending it back.
+			$track['properties'] = array_filter( $track['properties'] );
+		}
 
-		return $track;
+		return apply_filters( 'segment_io_get_current_page_track', $track, $settings, $this );
 	}
 
 	private function clean_array( $array ) {
