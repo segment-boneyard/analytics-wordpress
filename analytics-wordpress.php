@@ -85,6 +85,7 @@ class Segment_IO_Analytics_WordPress {
 
 	private static $instance;
 
+	private $analytics;
 	private $option   = 'analytics_wordpress_options';
 	private $defaults = array(
 		// Your Segment.io API key that we'll use to initialize analytics.js.
