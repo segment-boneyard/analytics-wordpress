@@ -56,6 +56,7 @@ class Segment_IO_Analytics {
 		}
 
 		include_once( SEG_IO_FILE_PATH . '/templates/snippet.php' );
+
 	}
 
 	// Render a Javascript `identify` call.
