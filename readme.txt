@@ -1,9 +1,9 @@
 === Analytics for WordPress — by Segment.io ===
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
-Requires at least: 3.4
-Tested up to: 3.5.1
-Stable tag: 0.5.6
+Requires at least: 3.5
+Tested up to: 3.9.2
+Stable tag: 0.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,11 +48,16 @@ Yup! You can also turn off specific events, in case you only want a few.
 = Can I ignore logged-in users? =
 Yup! You can even _just_ ignore Administrators or Editors too.
 
-
 == Screenshots ==
 
 
 == Changelog ==
+
+= 0.6 =
+* Total refactor for WordPress plugin best practices.
+* Fully internationalized.
+* Addition of several actions and filters.
+* 
 
 = 0.5.6 =
 * Fixed a bug with non-static methods in newer versions on PHP.
