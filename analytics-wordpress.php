@@ -164,8 +164,31 @@ class Segment_IO_Analytics_WordPress {
 		$this->set_settings( $settings );
 	}
 
-	public function __construct() {
-		return self::get_instance();
+	private function __construct() {}
+
+	public function load_textdomain() {
+		// Set filter for plugin's languages directory
+		$segment_io_lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
+		$segment_io_lang_dir = apply_filters( 'segment_io_languages_directory', $segment_io_lang_dir );
+
+		// Traditional WordPress plugin locale filter
+		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'segment-io' );
+		$mofile        = sprintf( '%1$s-%2$s.mo', 'segment-io', $locale );
+
+		// Setup paths to current locale file
+		$mofile_local  = $segment_io_lang_dir . $mofile;
+		$mofile_global = WP_LANG_DIR . '/segment-io/' . $mofile;
+
+		if ( file_exists( $mofile_global ) ) {
+			// Look in global /wp-content/languages/segment-io folder
+			load_textdomain( 'segment-io', $mofile_global );
+		} elseif ( file_exists( $mofile_local ) ) {
+			// Look in local /wp-content/plugins/analytics-wordpress/languages/ folder
+			load_textdomain( 'segment-io', $mofile_local );
+		} else {
+			// Load the default language files
+			load_plugin_textdomain( 'segment-io', false, $segment_io_lang_dir );
+		}
 	}
 
 	public function wp_head() {
@@ -181,7 +204,7 @@ class Segment_IO_Analytics_WordPress {
 		}
 
 		// Render the snippet.
-		self::$instance->analytics::initialize( $settings, $ignore );
+		self::$instance->analytics->initialize( $settings, $ignore );
 	}
 
 	public function wp_footer() {
@@ -190,14 +213,14 @@ class Segment_IO_Analytics_WordPress {
 		$identify = $this->get_current_user_identify();
 		
 		if ( $identify ) {
-			self::$instance->analytics::identify( $identify['user_id'], $identify['traits'] );
+			self::$instance->analytics->identify( $identify['user_id'], $identify['traits'] );
 		}
 
 		// Track a custom page view event if the current page merits it.
 		$track = $this->get_current_page_track();
 
 		if ( $track ) {
-			self::$instance->analytics::track( $track['event'], $track['properties'] );
+			self::$instance->analytics->track( $track['event'], $track['properties'] );
 		}
 	}
 
