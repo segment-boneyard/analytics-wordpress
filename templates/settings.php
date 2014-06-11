@@ -12,16 +12,15 @@
     <table class="form-table">
       <tr valign="top">
         <th scope="row">
-          <label for="api_key">Enter your Segment.io API key:</label>
+          <label for="api_key">Enter your Segment.io API Write key:</label>
         </th>
         <td>
           <input class="regular-text ltr"
               type="text"
               name="api_key"
               id="api_key"
-              value="<?php echo $settings['api_key']; ?>" />
-          <p class="description">You can find your API key in the
-            WordPress section of the Setup Guide.</p>
+              value="<?php echo esc_attr( $settings['api_key'] ); ?>" />
+          <p class="description">You can find your API Write Key in Project Settings > API Keys in your Segment.io Dashboard.</p>
         </td>
       </tr>
     </table>
