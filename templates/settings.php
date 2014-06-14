@@ -124,6 +124,23 @@
       </tr>
       <tr valign="top">
         <th scope="row">
+          <label for="track_comments">Track Comments</label>
+        </th>
+        <td>
+          <fieldset>
+            <label for="track_comments">
+              <input name="track_comments"
+                     type="checkbox"
+                     id="track_comments"
+                     value="1"
+                     <?php if ($settings['track_comments']) echo 'checked="checked"'; ?> />
+              Automatically track events when your comments are made.
+            </label>
+          </fieldset>
+        </td>
+      </tr>
+      <tr valign="top">
+        <th scope="row">
           <label for="track_searches">Track Searches</label>
         </th>
         <td>

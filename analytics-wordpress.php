@@ -67,7 +67,7 @@ class Segment_IO_Analytics {
 
 		include_once( SEG_IO_FILE_PATH. '/templates/identify.php' );
 	}
-
+ 
 	// Render a Javascript `track` call.
 	public static function track( $event, $properties = array(), $options = array() ) {
 
@@ -108,6 +108,9 @@ class Segment_IO_Analytics_WordPress {
 		// the Category archive or the Author archive.
 		'track_archives'    => true,
 
+		// Whether or not we should track custom events for comments
+		'track_comments'    => true,
+
 		// Whether or not we should track custom events for the Search page.
 		'track_searches'    => true
 	);
@@ -147,9 +150,9 @@ class Segment_IO_Analytics_WordPress {
 
 	public function frontend_hooks() {
 
-		add_action( 'wp_head'  , array( $this, 'wp_head' )  , 9 );
-		add_action( 'wp_footer', array( $this, 'wp_footer' ), 9 );
-
+		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
+		add_action( 'wp_footer'        , array( $this, 'wp_footer' )     , 9    );
+		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
 	}
 
 	public function init_settings() {
@@ -226,6 +229,13 @@ class Segment_IO_Analytics_WordPress {
 		}
 	}
 
+	public function insert_comment( $id, $comment ) {
+		$commenter = wp_get_current_commenter();
+		$hash      = md5( json_encode( $commenter ) );
+
+		setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+	}
+
 	public function plugin_action_links( $links, $file ) {
 	
 		// Not for other plugins, silly. NOTE: This doesn't work properly when
@@ -290,6 +300,7 @@ class Segment_IO_Analytics_WordPress {
 			$settings['track_posts']       = isset( $_POST['track_posts'] )   ;
 			$settings['track_pages']       = isset( $_POST['track_pages'] )   ;
 			$settings['track_archives']    = isset( $_POST['track_archives'] );
+			$settings['track_comments']    = isset( $_POST['track_comments'] );
 			$settings['track_searches']    = isset( $_POST['track_searches'] );
 
 			$this->set_settings( $settings );
@@ -300,7 +311,7 @@ class Segment_IO_Analytics_WordPress {
 
 	// Get our plugin's settings.
 	private function get_settings() {
-		return apply_filters( 'segment_io_get_settings', get_option( $this->option ) );
+		return apply_filters( 'segment_io_get_settings', get_option( $this->option ), $this );
 	}
 
 	// Store new settings for our plugin.
@@ -432,6 +443,27 @@ class Segment_IO_Analytics_WordPress {
 					)
 				);
 			}
+		}
+
+		// Comments
+		// --------
+		if ( $settings['track_comments'] ) {
+
+			$commenter = wp_get_current_commenter();
+			$hash      = md5( json_encode( $commenter ) );
+
+			if ( isset( $_COOKIE['segment_left_comment_' . COOKIEHASH] ) && $hash === $_COOKIE['segment_left_comment_' . COOKIEHASH] ) {
+
+				$track = array(
+					'event'      => 'Commented',
+					'properties' => array(
+						'commenter' => $commenter
+					)
+				);
+
+				setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			}
+
 		}
 
 		// Searches
