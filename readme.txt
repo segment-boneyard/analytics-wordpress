@@ -55,9 +55,9 @@ Yup! You can even _just_ ignore Administrators or Editors too.
 
 = 0.6 =
 * Total refactor for WordPress plugin best practices.
-* Fully internationalized.
-* Addition of several actions and filters.
-* 
+* Addition of several helpful filters.
+* Now sends category data for posts.
+* New options to allow you to track user logins.
 
 = 0.5.6 =
 * Fixed a bug with non-static methods in newer versions on PHP.
