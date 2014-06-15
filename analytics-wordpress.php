@@ -380,10 +380,12 @@ class Segment_IO_Analytics_WordPress {
 			// we filter those out. The event name is based on the post's type,
 			// and is uppercased.
 			if ( is_single() && ! is_attachment() ) {
+				$categories = implode( ', ', wp_list_pluck( get_categories( get_the_ID() ), 'name' ) );
 				$track = array(
 					'event'      => 'Viewed ' . ucfirst( get_post_type() ),
 					'properties' => array(
-						'title'  => single_post_title( '', false )
+						'title'      => single_post_title( '', false ),
+						'category' => $categories
 					)
 				);
 			}
