@@ -111,6 +111,12 @@ class Segment_IO_Analytics_WordPress {
 		// Whether or not we should track custom events for comments
 		'track_comments'    => true,
 
+		// Whether or not we should track custom events for users logging in
+		'track_logins'      => true,
+
+		// Whether or not we should track custom events for viewing the logged in page.
+		'track_login_page'  => false,
+
 		// Whether or not we should track custom events for the Search page.
 		'track_searches'    => true
 	);
@@ -151,8 +157,11 @@ class Segment_IO_Analytics_WordPress {
 	public function frontend_hooks() {
 
 		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
+		add_action( 'login_head'       , array( $this, 'wp_head' )       , 9    );
 		add_action( 'wp_footer'        , array( $this, 'wp_footer' )     , 9    );
+		add_action( 'login_footer'     , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
+		add_action( 'wp_login'         , array( $this, 'login_event' ), 9, 2 );
 	}
 
 	public function init_settings() {
@@ -234,6 +243,13 @@ class Segment_IO_Analytics_WordPress {
 		$hash      = md5( json_encode( $commenter ) );
 
 		setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+	}
+
+	public function login_event( $login, $user ) {
+
+		$hash = md5( json_encode( $user ) );
+
+		setcookie( 'segment_logged_in_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 	}
 
 	public function plugin_action_links( $links, $file ) {
@@ -464,6 +480,41 @@ class Segment_IO_Analytics_WordPress {
 				);
 
 				setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			}
+
+		}
+
+		// Login Event
+		// --------
+		if ( $settings['track_logins'] ) {
+
+			$user = wp_get_current_user();
+			$hash = md5( json_encode( $user ) );
+
+			if ( isset( $_COOKIE['segment_logged_in_' . COOKIEHASH] ) && $hash === $_COOKIE['segment_left_comment_' . COOKIEHASH] ) {
+
+				$track = array(
+					'event'      => 'Logged In',
+					'properties' => array(
+						'user' => $user
+					)
+				);
+
+				setcookie( 'segment_logged_in_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			}
+
+		}
+
+		// Login Page
+		// --------
+		if ( $settings['track_login_page'] ) {
+
+			if ( did_action( 'login_init' ) ) {
+
+				$track = array(
+					'event'      => 'Viewed Login Page'
+				);
+
 			}
 
 		}

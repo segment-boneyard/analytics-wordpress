@@ -141,6 +141,40 @@
       </tr>
       <tr valign="top">
         <th scope="row">
+          <label for="track_logins">Track Logins</label>
+        </th>
+        <td>
+          <fieldset>
+            <label for="track_logins">
+              <input name="track_logins"
+                     type="checkbox"
+                     id="track_logins"
+                     value="1"
+                     <?php if ($settings['track_logins']) echo 'checked="checked"'; ?> />
+              Automatically track events when your users log in.
+            </label>
+          </fieldset>
+        </td>
+      </tr>
+      <tr valign="top">
+        <th scope="row">
+          <label for="track_login_page">Track Login Pageviews</label>
+        </th>
+        <td>
+          <fieldset>
+            <label for="track_login_page">
+              <input name="track_login_page"
+                     type="checkbox"
+                     id="track_login_page"
+                     value="1"
+                     <?php if ($settings['track_login_page']) echo 'checked="checked"'; ?> />
+              Automatically track events when your login page is viewed.
+            </label>
+          </fieldset>
+        </td>
+      </tr>
+      <tr valign="top">
+        <th scope="row">
           <label for="track_searches">Track Searches</label>
         </th>
         <td>
