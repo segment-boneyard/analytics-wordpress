@@ -12,16 +12,15 @@
     <table class="form-table">
       <tr valign="top">
         <th scope="row">
-          <label for="api_key">Enter your Segment.io API key:</label>
+          <label for="api_key">Enter your Segment.io API Write key:</label>
         </th>
         <td>
           <input class="regular-text ltr"
               type="text"
               name="api_key"
               id="api_key"
-              value="<?php echo $settings['api_key']; ?>" />
-          <p class="description">You can find your API key in the
-            WordPress section of the Setup Guide.</p>
+              value="<?php echo esc_attr( $settings['api_key'] ); ?>" />
+          <p class="description">You can find your API Write Key in Project Settings > API Keys in your Segment.io Dashboard.</p>
         </td>
       </tr>
     </table>
@@ -120,6 +119,57 @@
             </label>
             <p class="description">These will be "Viewed Category Page" or
               "Viewed Author Page" events.</p>
+          </fieldset>
+        </td>
+      </tr>
+      <tr valign="top">
+        <th scope="row">
+          <label for="track_comments">Track Comments</label>
+        </th>
+        <td>
+          <fieldset>
+            <label for="track_comments">
+              <input name="track_comments"
+                     type="checkbox"
+                     id="track_comments"
+                     value="1"
+                     <?php if ($settings['track_comments']) echo 'checked="checked"'; ?> />
+              Automatically track events when your comments are made.
+            </label>
+          </fieldset>
+        </td>
+      </tr>
+      <tr valign="top">
+        <th scope="row">
+          <label for="track_logins">Track Logins</label>
+        </th>
+        <td>
+          <fieldset>
+            <label for="track_logins">
+              <input name="track_logins"
+                     type="checkbox"
+                     id="track_logins"
+                     value="1"
+                     <?php if ($settings['track_logins']) echo 'checked="checked"'; ?> />
+              Automatically track events when your users log in.
+            </label>
+          </fieldset>
+        </td>
+      </tr>
+      <tr valign="top">
+        <th scope="row">
+          <label for="track_login_page">Track Login Pageviews</label>
+        </th>
+        <td>
+          <fieldset>
+            <label for="track_login_page">
+              <input name="track_login_page"
+                     type="checkbox"
+                     id="track_login_page"
+                     value="1"
+                     <?php if ($settings['track_login_page']) echo 'checked="checked"'; ?> />
+              Automatically track events when your login page is viewed.
+            </label>
           </fieldset>
         </td>
       </tr>
