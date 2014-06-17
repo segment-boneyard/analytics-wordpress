@@ -10,14 +10,14 @@ Author URI: https://segment.io
 Author Email: friends@segment.io
 */
 
-class Segment_IO_Analytics {
+class Segment_Analytics {
 	private static $instance;
 
 	public static function get_instance() {
 
 		if ( ! isset( self::$instance ) ) {
 
-			self::$instance = new Segment_IO_Analytics;
+			self::$instance = new Segment_Analytics;
 			self::$instance->setup_constants();
 			self::$instance->include_files();
 
@@ -29,22 +29,22 @@ class Segment_IO_Analytics {
 	public function setup_constants() {
 
 		// Set the core file path
-		define( 'SEG_IO_FILE_PATH', dirname( __FILE__ ) );
+		define( 'SEG_FILE_PATH', dirname( __FILE__ ) );
 
 		// Define the path to the plugin folder
-		define( 'SEG_IO_DIR_NAME',  basename( SEG_IO_FILE_PATH ) );
+		define( 'SEG_DIR_NAME',  basename( SEG_FILE_PATH ) );
 
 		// Define the URL to the plugin folder
-		define( 'SEG_IO_FOLDER', dirname( plugin_basename( __FILE__ ) ) );
-		define( 'SEG_IO_URL'   , plugins_url( '', __FILE__ ) );
+		define( 'SEG_FOLDER', dirname( plugin_basename( __FILE__ ) ) );
+		define( 'SEG_URL'   , plugins_url( '', __FILE__ ) );
 
 	}
 
 	public function include_files() {
 
 		// Include old files for back compat
-		include_once( SEG_IO_FILE_PATH . '/class.analytics.php' );
-		include_once( SEG_IO_FILE_PATH . '/class.analytics-wordpress.php' );
+		include_once( SEG_FILE_PATH . '/class.analytics.php' );
+		include_once( SEG_FILE_PATH . '/class.analytics-wordpress.php' );
 
 	}
 
@@ -55,7 +55,7 @@ class Segment_IO_Analytics {
 			return;
 		}
 
-		include_once( SEG_IO_FILE_PATH . '/templates/snippet.php' );
+		include_once( SEG_FILE_PATH . '/templates/snippet.php' );
 
 	}
 
@@ -65,7 +65,7 @@ class Segment_IO_Analytics {
 		// Set the proper `library` option so we know where the API calls come from.
 		$options['library'] = 'analytics-wordpress';
 
-		include_once( SEG_IO_FILE_PATH. '/templates/identify.php' );
+		include_once( SEG_FILE_PATH. '/templates/identify.php' );
 	}
  
 	// Render a Javascript `track` call.
@@ -74,12 +74,12 @@ class Segment_IO_Analytics {
 		// Set the proper `library` option so we know where the API calls come from.
 		$options['library'] = 'analytics-wordpress';
 
-		include_once( SEG_IO_FILE_PATH . '/templates/track.php' );
+		include_once( SEG_FILE_PATH . '/templates/track.php' );
 	}
 
 }
 
-class Segment_IO_Analytics_WordPress {
+class Segment_Analytics_WordPress {
 
 	const SLUG    = 'analytics';
 	const VERSION = '0.6';
@@ -123,9 +123,9 @@ class Segment_IO_Analytics_WordPress {
 
 	public static function get_instance() {
 		
-		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Segment_IO_Analytics_WordPress ) ) {
+		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Segment_Analytics_WordPress ) ) {
 			
-			self::$instance = new Segment_IO_Analytics_WordPress;
+			self::$instance = new Segment_Analytics_WordPress;
 			self::$instance->load_textdomain();
 			self::$instance->admin_hooks();
 			self::$instance->frontend_hooks();
@@ -135,7 +135,7 @@ class Segment_IO_Analytics_WordPress {
 				self::$instance->init_settings();
 			}
 
-			self::$instance->analytics = Segment_IO_Analytics::get_instance();
+			self::$instance->analytics = Segment_Analytics::get_instance();
 
 		}
 
@@ -178,30 +178,30 @@ class Segment_IO_Analytics_WordPress {
 		$this->set_settings( $settings );
 	}
 
-	private function __construct() {}
+	public function __construct() {}
 
 	public function load_textdomain() {
 		// Set filter for plugin's languages directory
-		$segment_io_lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
-		$segment_io_lang_dir = apply_filters( 'segment_io_languages_directory', $segment_io_lang_dir );
+		$segment_lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
+		$segment_lang_dir = apply_filters( 'segment_languages_directory', $segment_lang_dir );
 
 		// Traditional WordPress plugin locale filter
-		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'segment-io' );
-		$mofile        = sprintf( '%1$s-%2$s.mo', 'segment-io', $locale );
+		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'segment' );
+		$mofile        = sprintf( '%1$s-%2$s.mo', 'segment', $locale );
 
 		// Setup paths to current locale file
-		$mofile_local  = $segment_io_lang_dir . $mofile;
-		$mofile_global = WP_LANG_DIR . '/segment-io/' . $mofile;
+		$mofile_local  = $segment_lang_dir . $mofile;
+		$mofile_global = WP_LANG_DIR . '/segment/' . $mofile;
 
 		if ( file_exists( $mofile_global ) ) {
-			// Look in global /wp-content/languages/segment-io folder
-			load_textdomain( 'segment-io', $mofile_global );
+			// Look in global /wp-content/languages/segment folder
+			load_textdomain( 'segment', $mofile_global );
 		} elseif ( file_exists( $mofile_local ) ) {
 			// Look in local /wp-content/plugins/analytics-wordpress/languages/ folder
-			load_textdomain( 'segment-io', $mofile_local );
+			load_textdomain( 'segment', $mofile_local );
 		} else {
 			// Load the default language files
-			load_plugin_textdomain( 'segment-io', false, $segment_io_lang_dir );
+			load_plugin_textdomain( 'segment', false, $segment_lang_dir );
 		}
 	}
 
@@ -322,12 +322,12 @@ class Segment_IO_Analytics_WordPress {
 			$this->set_settings( $settings );
 		}
 
-		include_once( SEG_IO_FILE_PATH . '/templates/settings.php');
+		include_once( SEG_FILE_PATH . '/templates/settings.php');
 	}
 
 	// Get our plugin's settings.
 	private function get_settings() {
-		return apply_filters( 'segment_io_get_settings', get_option( $this->option ), $this );
+		return apply_filters( 'segment_get_settings', get_option( $this->option ), $this );
 	}
 
 	// Store new settings for our plugin.
@@ -556,4 +556,4 @@ class Segment_IO_Analytics_WordPress {
 
 }
 
-add_action( 'plugins_loaded', 'Segment_IO_Analytics_WordPress::get_instance' );
+add_action( 'plugins_loaded', 'Segment_Analytics_WordPress::get_instance' );
