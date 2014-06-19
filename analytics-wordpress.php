@@ -82,6 +82,8 @@ class Segment_Analytics {
 
 	public static function page( $name, $properties = array() ) {}
 
+	public static function alias( $from, $to, $context = '' ) {}
+
 }
 
 class Segment_Analytics_WordPress {
