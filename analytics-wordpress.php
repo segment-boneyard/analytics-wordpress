@@ -378,7 +378,7 @@ class Segment_Analytics_WordPress {
 			$identify['traits'] = array_filter( $identify['traits'] );
 		}
 
-		return apply_filters( 'segment_io_get_current_user_identify', $identify, $settings, $this );
+		return apply_filters( 'segment_get_current_user_identify', $identify, $settings, $this );
 	}
 
 	// Based on the current page, get the event and properties that should be
@@ -547,7 +547,7 @@ class Segment_Analytics_WordPress {
 			$track['properties'] = array_filter( $track['properties'] );
 		}
 
-		return apply_filters( 'segment_io_get_current_page_track', $track, $settings, $this );
+		return apply_filters( 'segment_get_current_page_track', $track, $settings, $this );
 	}
 
 	private function clean_array( $array ) {
