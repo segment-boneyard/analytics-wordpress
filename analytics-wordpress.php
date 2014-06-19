@@ -19,7 +19,10 @@ class Segment_Analytics {
 
 			self::$instance = new Segment_Analytics;
 			self::$instance->setup_constants();
-			self::$instance->include_files();
+
+			if ( ! has_action( 'plugins_loaded', array( self::$instance, 'include_deprecated_files' ) ) ) {
+				add_action( 'plugins_loaded', array( self::$instance, 'include_deprecated_files' ), 20 );
+			}
 
 		}
 
@@ -40,7 +43,7 @@ class Segment_Analytics {
 
 	}
 
-	public function include_files() {
+	public function include_deprecated_files() {
 
 		// Include old files for back compat
 		include_once( SEG_FILE_PATH . '/class.analytics.php' );
@@ -161,7 +164,7 @@ class Segment_Analytics_WordPress {
 		add_action( 'wp_footer'        , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'login_footer'     , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
-		add_action( 'wp_login'         , array( $this, 'login_event' ), 9, 2 );
+		add_action( 'wp_login'         , array( $this, 'login_event'    ), 9, 2 );
 	}
 
 	public function init_settings() {
