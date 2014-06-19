@@ -80,6 +80,8 @@ class Segment_Analytics {
 		include_once( SEG_FILE_PATH . '/templates/track.php' );
 	}
 
+	public static function page( $name, $properties = array() ) {}
+
 }
 
 class Segment_Analytics_WordPress {
