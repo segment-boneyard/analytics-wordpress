@@ -143,7 +143,7 @@ class Segment_Analytics_WordPress {
 			}
 
 			self::$instance->analytics = Segment_Analytics::get_instance();
-
+			self::$instance->include_files();
 		}
 
 		return self::$instance;
@@ -325,6 +325,8 @@ class Segment_Analytics_WordPress {
 			$settings['track_archives']    = isset( $_POST['track_archives'] );
 			$settings['track_comments']    = isset( $_POST['track_comments'] );
 			$settings['track_searches']    = isset( $_POST['track_searches'] );
+			$settings['track_logins']      = isset( $_POST['track_logins'] );
+			$settings['track_login_page']  = isset( $_POST['track_login_page'] );
 
 			$this->set_settings( $settings );
 		}
