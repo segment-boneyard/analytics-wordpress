@@ -161,6 +161,15 @@ class Segment_Analytics_WordPress {
 
 	}
 
+	public function include_files() {
+	
+		do_action( 'segment_pre_include_files', self::$instance );
+
+		include_once( SEG_FILE_PATH . '/integrations/ecommerce.php' );
+
+		do_action( 'segment_include_files', self::$instance );
+	}
+
 	public function frontend_hooks() {
 
 		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
