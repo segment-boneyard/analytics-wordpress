@@ -350,7 +350,7 @@ class Segment_Analytics_WordPress {
 
 	// Store new settings for our plugin.
 	private function set_settings( $settings ) {
-		return update_option( $this->option, $settings );
+		return update_option( $this->option, apply_filters( 'segment_set_settings', $settings, $this ) );
 	}
 
 	// Based on the current user or commenter, see if we have enough information
