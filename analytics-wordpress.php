@@ -403,9 +403,43 @@ class Segment_Analytics_WordPress {
 	// tracked for the custom page view event. Getting the title for a page is
 	// confusing depending on what type of page it is... so reference this:
 	// http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
+	
 	private function get_current_page_track() {
 
 		$settings = $this->get_settings();
+
+		// Login Event
+		// --------
+		if ( $settings['track_logins'] ) {
+
+			$user = wp_get_current_user();
+			$hash = md5( json_encode( $user ) );
+
+			$key = 'segment_logged_in_' . COOKIEHASH;
+
+			if ( isset( $_COOKIE[ $key ] ) && $hash === $_COOKIE[ $key ] ) {
+
+				unset( $_COOKIE[ $key ] );
+			
+				/* Note: we probably need an 'already-sent' cookie, as this is failing to unset, due to headers already being sent. */
+
+				@ setcookie( $key, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+				
+				$track = array(
+					'event'      => 'Logged In',
+					'properties' => array(
+						'username'  => $user->user_login,
+						'email'     => $user->user_email,
+						'name'      => $user->display_name,
+						'firstName' => $user->user_firstname,
+						'lastName'  => $user->user_lastname,
+						'url'       => $user->user_url
+					)
+				);
+
+			}
+
+		}
 
 		// Posts
 		// -----
@@ -496,29 +530,8 @@ class Segment_Analytics_WordPress {
 						'commenter' => $commenter
 					)
 				);
-
-				setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
-			}
-
-		}
-
-		// Login Event
-		// --------
-		if ( $settings['track_logins'] ) {
-
-			$user = wp_get_current_user();
-			$hash = md5( json_encode( $user ) );
-
-			if ( isset( $_COOKIE['segment_logged_in_' . COOKIEHASH] ) && $hash === $_COOKIE['segment_left_comment_' . COOKIEHASH] ) {
-
-				$track = array(
-					'event'      => 'Logged In',
-					'properties' => array(
-						'user' => $user
-					)
-				);
-
-				setcookie( 'segment_logged_in_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+				/* Note: we probably need an 'already-sent' cookie, as this is failing to unset, due to headers already being sent. */
+				//@ setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 			}
 
 		}
