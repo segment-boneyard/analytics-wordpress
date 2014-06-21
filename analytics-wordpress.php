@@ -81,8 +81,6 @@ class Segment_Analytics {
 	}
 
 	public static function page( $page, $properties = array() ) {
-		// Set the proper `library` option so we know where the API calls come from.
-		$options['library'] = 'analytics-wordpress';
 
 		include_once( SEG_FILE_PATH . '/templates/page.php' );
 
@@ -265,7 +263,7 @@ class Segment_Analytics_WordPress {
 		}
 
 		if ( $page ) {
-			self::$instance->analytics->page( $page['event'], $page['properties'] );
+			self::$instance->analytics->page( $page['page'], $page['properties'] );
 		}
 	}
 
@@ -604,6 +602,7 @@ class Segment_Analytics_WordPress {
 		$page = apply_filters( 'segment_get_current_page', false, $settings, $this );
 
 		if ( $page ) {
+			$page['properties'] = is_array( $page['properties'] ) ? $page['properties'] : array();
 			// All of these are checking for pages, and we don't want that to throw
 			// off Google Analytics's bounce rate, so mark them `noninteraction`.
 			$page['properties']['noninteraction'] = true;

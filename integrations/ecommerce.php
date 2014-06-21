@@ -14,6 +14,7 @@ abstract class Segment_Commerce {
 			'completed_order',
 		);
 
+		return $this;
 	}
 
 	/**
@@ -34,17 +35,17 @@ abstract class Segment_Commerce {
 	public function register_hook( $hook, $event, $args = 1, $class = '' ) {
 		
 		$registered_events = $this->get_registered_hooks();
-		
+
 		if ( ! empty( $class ) && is_callable( array( $class, $event ) ) ) {
 
 			$this->registered_events[ $hook ] = array( $class, $event );
 			
-			$registered = add_action( $hook, $event, 10, $args );
+			$registered = add_filter( $hook, array( $class, $event ), 10, $args );
 
 		} else if ( is_callable( $event ) ) {
 
 			$registered = $this->registered_events[ $hook ] = $event;
-			$registered = add_action( $hook, $event, 10, $args );
+			$registered = add_filter( $hook, $event, 10, $args );
 
 		} else {
 
@@ -69,10 +70,10 @@ abstract class Segment_Commerce {
 
 	}
 
-	abstract function viewed_category( $track );
-	abstract function viewed_product( $track );
-	abstract function added_to_cart( $product, $cart_item );
-	abstract function removed_from_cart( $key, $cart );
+	abstract function viewed_category();
+	abstract function viewed_product();
+	abstract function added_to_cart();
+	abstract function removed_from_cart();
 	abstract function completed_order();
 
 }

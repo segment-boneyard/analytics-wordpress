@@ -10,8 +10,21 @@
  * Ergo, Segment_Cookie.  A simple API, provided to do one simple task: Track server-side events, on the client-side.
  * Two great examples: `wp_login` and `wp_insert_comment`. 
  * 
+ * You'll swiftly notice that we essentially log two cookies per event...the hash/payload and the tracker.  
+ * The hash is what we'll actually check against on the event to output the tracking script.  \
+ * But we cannot unset the cookie on the same event, so on the next page load, we check for the tracker cookie.
+ * This cookie is set after the tracking has occurred.  If it's set, we unset both cookies and are good to go. 
+ * 
  */
 
 class Segment_Cookie {
+
+	public static function set_cookie(  ) {
+
+	}
+
+	public static function get_cookie() {
+
+	}
 
 }
