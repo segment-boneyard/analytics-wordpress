@@ -80,9 +80,18 @@ class Segment_Analytics {
 		include_once( SEG_FILE_PATH . '/templates/track.php' );
 	}
 
-	public static function page( $name, $properties = array() ) {}
+	public static function page( $page, $properties = array() ) {
+		// Set the proper `library` option so we know where the API calls come from.
+		$options['library'] = 'analytics-wordpress';
 
-	public static function alias( $from, $to, $context = '' ) {}
+		include_once( SEG_FILE_PATH . '/templates/page.php' );
+
+	}
+
+	public static function alias( $from, $to, $context = '' ) {
+
+		include_once( SEG_FILE_PATH . '/templates/alias.php' );
+	}
 
 }
 
@@ -165,6 +174,7 @@ class Segment_Analytics_WordPress {
 	
 		do_action( 'segment_pre_include_files', self::$instance );
 
+		include_once( SEG_FILE_PATH . '/class.segment-cookie.php' );
 		include_once( SEG_FILE_PATH . '/integrations/ecommerce.php' );
 
 		do_action( 'segment_include_files', self::$instance );
@@ -248,9 +258,14 @@ class Segment_Analytics_WordPress {
 
 		// Track a custom page view event if the current page merits it.
 		$track = $this->get_current_page_track();
+		$page  = $this->get_current_page();
 
 		if ( $track ) {
 			self::$instance->analytics->track( $track['event'], $track['properties'] );
+		}
+
+		if ( $page ) {
+			self::$instance->analytics->page( $page['event'], $page['properties'] );
 		}
 	}
 
@@ -579,6 +594,25 @@ class Segment_Analytics_WordPress {
 		}
 
 		return apply_filters( 'segment_get_current_page_track', $track, $settings, $this );
+	}
+
+
+	private function get_current_page() {
+
+		$settings = $this->get_settings();
+
+		$page = apply_filters( 'segment_get_current_page', false, $settings, $this );
+
+		if ( $page ) {
+			// All of these are checking for pages, and we don't want that to throw
+			// off Google Analytics's bounce rate, so mark them `noninteraction`.
+			$page['properties']['noninteraction'] = true;
+
+			// Clean out empty properties before sending it back.
+			$page['properties'] = array_filter( $page['properties'] );
+		}
+
+		return apply_filters( 'segment_get_current_page', $page, $settings, $this );
 	}
 
 	private function clean_array( $array ) {
