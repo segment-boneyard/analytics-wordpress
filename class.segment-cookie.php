@@ -24,8 +24,15 @@ class Segment_Cookie {
 		$_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] = $value;
 	}
 
-	public static function get_cookie( $key, $value ) {
-		return isset( $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] ) && $value === $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ];
+	public static function get_cookie( $key, $value = '' ) {
+		
+		if ( ! empty( $value ) ) {
+			return isset( $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] ) && $value === $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ];
+		} else if ( isset( $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] ) ) {
+			return $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ];
+		} else {
+			return false;
+		}
 	}
 
 	public static function unset_cookie( $key = '' ) {
