@@ -11,7 +11,7 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 		$this->register_hook( 'segment_get_current_page_track', 'removed_from_cart', 2, $this );
 
 		/* HTTP actions */
-		add_action( 'wpsc_add_to_cart', array( $this, 'add_to_cart' )     , 10, 2 );
+		add_action( 'wpsc_add_to_cart', array( $this, 'add_to_cart' ), 10, 2 );
 
 		/* When WPeC 3.9 is the min. version for this plugin, we'll use `wpsc_remove_item` */
 		add_action( 'wpsc_refresh_item', array( $this, 'remove_from_cart' ), 10 );
