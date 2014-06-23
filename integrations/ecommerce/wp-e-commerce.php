@@ -6,9 +6,16 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 
 		$this->register_hook( 'segment_get_current_page'      , 'viewed_category'  , 1, $this );
 		$this->register_hook( 'segment_get_current_page_track', 'viewed_product'   , 1, $this );
-		$this->register_hook( 'wpsc_add_to_cart'              , 'added_to_cart'    , 2, $this );
-		$this->register_hook( 'wpsc_remove_item'              , 'removed_from_cart', 2, $this );
 		$this->register_hook( 'segment_get_current_page_track', 'completed_order'  , 1, $this );
+		$this->register_hook( 'segment_get_current_page_track', 'added_to_cart'    , 2, $this );
+		$this->register_hook( 'segment_get_current_page_track', 'removed_from_cart', 2, $this );
+
+		/* HTTP actions */
+		add_action( 'wpsc_add_to_cart', array( $this, 'add_to_cart' )     , 10, 2 );
+
+		/* When WPeC 3.9 is the min. version for this plugin, we'll use `wpsc_remove_item` */
+		add_action( 'wpsc_refresh_item', array( $this, 'remove_from_cart' ), 10 );
+
 	}
 	
 	public function viewed_category() {
@@ -47,15 +54,90 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 		return $track;
 	}
 
-	public function added_to_cart() {
+	public function add_to_cart( $product, $cart_item ) {
 
+		Segment_Cookie::set_cookie( 'added_to_cart', json_encode( 
+				array( 
+					'ID'       => $product->ID, 
+					'quantity' => $cart_item->quantity,
+					'name'     => $product->post_title,
+					'price'    => $cart_item->unit_price
+				)
+			) 
+		);
+	}
+
+	public function added_to_cart() {
+		$args = func_get_args();
+
+		$track = $args[0];
+
+		if ( Segment_Cookie::get_cookie( 'added_to_cart' ) ) {
+
+			$product = json_decode( Segment_Cookie::get_cookie( 'added_to_cart' ) );
+
+			$item = array(
+				'id'       => $product->ID,
+				'sku'      => wpsc_product_sku( $product->ID ),
+				'name'     => $product->name,
+				'price'    => $product->price,
+				'quantity' => $product->quantity,
+				'category' => implode( ', ', wp_list_pluck( wpsc_get_product_terms( $product->ID, 'wpsc_product_category' ), 'name' ) ),
+			);
+
+			$track = array(
+				'event'      => 'Added Product',
+				'properties' => $item,
+				'http_event' => 'added_to_cart'
+			);
+
+		}
+
+		return $track;
+	}
+
+	public function remove_from_cart( $cart_item ) {
+		if ( 0 == $cart_item->quantity ) {
+			Segment_Cookie::set_cookie( 'removed_from_cart', json_encode( 
+					array( 
+						'ID'       => $cart_item->product_id, 
+						'quantity' => 0,
+						'name'     => $cart_item->product_title,
+						'price'    => $cart_item->unit_price
+					)
+				) 
+			);
+		}
+		
 	}
 
 	public function removed_from_cart() {
 		$args = func_get_args();
-		$key  = $args[0];
-		$cart = $args[1];
 
+		$track = $args[0];
+
+		if ( Segment_Cookie::get_cookie( 'removed_from_cart' ) ) {
+
+			$product = json_decode( Segment_Cookie::get_cookie( 'removed_from_cart' ) );
+
+			$item = array(
+				'id'       => $product->ID,
+				'sku'      => wpsc_product_sku( $product->ID ),
+				'name'     => $product->name,
+				'price'    => $product->price,
+				'quantity' => 0,
+				'category' => implode( ', ', wp_list_pluck( wpsc_get_product_terms( $product->ID, 'wpsc_product_category' ), 'name' ) ),
+			);
+
+			$track = array(
+				'event'      => 'Removed Product',
+				'properties' => $item,
+				'http_event' => 'removed_from_cart'
+			);
+
+		}
+
+		return $track;
 	}
 
 	public function completed_order() {
