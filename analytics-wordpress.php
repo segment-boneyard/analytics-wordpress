@@ -72,7 +72,7 @@ class Segment_Analytics {
 	}
  
 	// Render a Javascript `track` call.
-	public static function track( $event, $properties = array(), $options = array() ) {
+	public static function track( $event, $properties = array(), $options = array(), $http_event = false ) {
 
 		// Set the proper `library` option so we know where the API calls come from.
 		$options['library'] = 'analytics-wordpress';
@@ -80,7 +80,7 @@ class Segment_Analytics {
 		include_once( SEG_FILE_PATH . '/templates/track.php' );
 	}
 
-	public static function page( $page, $properties = array() ) {
+	public static function page( $page, $properties = array(), $http_event = false ) {
 
 		include_once( SEG_FILE_PATH . '/templates/page.php' );
 
@@ -181,9 +181,11 @@ class Segment_Analytics_WordPress {
 	public function frontend_hooks() {
 
 		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
+		add_action( 'admin_head'       , array( $this, 'wp_head' )       , 9    );
 		add_action( 'login_head'       , array( $this, 'wp_head' )       , 9    );
 		add_action( 'wp_footer'        , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'login_footer'     , array( $this, 'wp_footer' )     , 9    );
+		add_action( 'admin_footer'     , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
 		add_action( 'wp_login'         , array( $this, 'login_event'    ), 9, 2 );
 	}
@@ -259,7 +261,8 @@ class Segment_Analytics_WordPress {
 		$page  = $this->get_current_page();
 
 		if ( $track ) {
-			self::$instance->analytics->track( $track['event'], $track['properties'] );
+			$http_event = isset( $track['http_event'] ) ? $track['http_event'] : false;
+			self::$instance->analytics->track( $track['event'], $track['properties'], '', $http_event );
 		}
 
 		if ( $page ) {
@@ -268,17 +271,13 @@ class Segment_Analytics_WordPress {
 	}
 
 	public function insert_comment( $id, $comment ) {
-		$commenter = wp_get_current_commenter();
-		$hash      = md5( json_encode( $commenter ) );
 
-		setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		Segment_Cookie::set_cookie( 'left_comment', md5( json_encode( wp_get_current_commenter() ) ) );
 	}
 
 	public function login_event( $login, $user ) {
 
-		$hash = md5( json_encode( $user ) );
-
-		setcookie( 'segment_logged_in_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		Segment_Cookie::set_cookie( 'logged_in', md5( json_encode( $user ) ) );
 	}
 
 	public function plugin_action_links( $links, $file ) {
@@ -428,15 +427,7 @@ class Segment_Analytics_WordPress {
 			$user = wp_get_current_user();
 			$hash = md5( json_encode( $user ) );
 
-			$key = 'segment_logged_in_' . COOKIEHASH;
-
-			if ( isset( $_COOKIE[ $key ] ) && $hash === $_COOKIE[ $key ] ) {
-
-				unset( $_COOKIE[ $key ] );
-			
-				/* Note: we probably need an 'already-sent' cookie, as this is failing to unset, due to headers already being sent. */
-
-				@ setcookie( $key, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			if ( Segment_Cookie::get_cookie( 'logged_in', $hash ) ) {
 				
 				$track = array(
 					'event'      => 'Logged In',
@@ -447,7 +438,8 @@ class Segment_Analytics_WordPress {
 						'firstName' => $user->user_firstname,
 						'lastName'  => $user->user_lastname,
 						'url'       => $user->user_url
-					)
+					),
+					'http_event' => 'logged_in'
 				);
 
 			}
@@ -535,16 +527,15 @@ class Segment_Analytics_WordPress {
 			$commenter = wp_get_current_commenter();
 			$hash      = md5( json_encode( $commenter ) );
 
-			if ( isset( $_COOKIE['segment_left_comment_' . COOKIEHASH] ) && $hash === $_COOKIE['segment_left_comment_' . COOKIEHASH] ) {
+			if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
 
 				$track = array(
 					'event'      => 'Commented',
 					'properties' => array(
 						'commenter' => $commenter
-					)
+					),
+					'http_event' => 'left_comment'
 				);
-				/* Note: we probably need an 'already-sent' cookie, as this is failing to unset, due to headers already being sent. */
-				//@ setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 			}
 
 		}

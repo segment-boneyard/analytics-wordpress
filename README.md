@@ -8,7 +8,7 @@ To get up and running, checkout our documentation at [segment.io/plugins/wordpre
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/segmentio/analytics-wordpress/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
-## Debugging ## 
+## Debugging
 
 Running into notices, warnings or errors?  Enable WP_DEBUG for proper error reporting by adding the following code to your `wp-config.php` file.
 

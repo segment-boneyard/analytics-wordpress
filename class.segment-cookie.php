@@ -10,21 +10,38 @@
  * Ergo, Segment_Cookie.  A simple API, provided to do one simple task: Track server-side events, on the client-side.
  * Two great examples: `wp_login` and `wp_insert_comment`. 
  * 
- * You'll swiftly notice that we essentially log two cookies per event...the hash/payload and the tracker.  
- * The hash is what we'll actually check against on the event to output the tracking script.  \
- * But we cannot unset the cookie on the same event, so on the next page load, we check for the tracker cookie.
- * This cookie is set after the tracking has occurred.  If it's set, we unset both cookies and are good to go. 
- * 
  */
 
 class Segment_Cookie {
 
-	public static function set_cookie(  ) {
+	private static $whitelist = array(
+		'logged_in',
+		'left_comment'
+	);
 
+	public static function set_cookie( $key, $value ) {
+		setcookie( 'segment_' . $key . '_' . COOKIEHASH, $value, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		$_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] = $value;
 	}
 
-	public static function get_cookie() {
-
+	public static function get_cookie( $key, $value ) {
+		return isset( $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] ) && $value === $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ];
 	}
+
+	public static function unset_cookie( $key = '' ) {
+
+		if ( isset( $_POST['key'] ) && in_array( $_POST['key'], self::$whitelist ) ) {
+			$key = sanitize_text_field( $_POST['key'] );
+		}
+
+		setcookie( 'segment_' . $key . '_' . COOKIEHASH, '', time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		unset( $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] );
+
+		wp_send_json_success( $key );
+	}
+
 
 }
+
+add_action( 'wp_ajax_segment_unset_cookie'       , array( 'Segment_Cookie', 'unset_cookie' ) );
+add_action( 'wp_ajax_nopriv_segment_unset_cookie', array( 'Segment_Cookie', 'unset_cookie' ) );
