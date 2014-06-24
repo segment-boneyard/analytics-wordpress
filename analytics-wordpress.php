@@ -80,7 +80,7 @@ class Segment_Analytics {
 		include_once( SEG_FILE_PATH . '/templates/track.php' );
 	}
 
-	public static function page( $page, $properties = array(), $http_event = false ) {
+	public static function page( $category = '', $name = '', $properties = array(), $options = array(), $http_event = false ) {
 
 		include_once( SEG_FILE_PATH . '/templates/page.php' );
 
@@ -212,8 +212,8 @@ class Segment_Analytics_WordPress {
 		$segment_lang_dir = apply_filters( 'segment_languages_directory', $segment_lang_dir );
 
 		// Traditional WordPress plugin locale filter
-		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'segment' );
-		$mofile        = sprintf( '%1$s-%2$s.mo', 'segment', $locale );
+		$locale = apply_filters( 'plugin_locale',  get_locale(), 'segment' );
+		$mofile = sprintf( '%1$s-%2$s.mo', 'segment', $locale );
 
 		// Setup paths to current locale file
 		$mofile_local  = $segment_lang_dir . $mofile;
@@ -383,7 +383,6 @@ class Segment_Analytics_WordPress {
 				'traits'  => array(
 					'username'  => $user->user_login,
 					'email'     => $user->user_email,
-					'name'      => $user->display_name,
 					'firstName' => $user->user_firstname,
 					'lastName'  => $user->user_lastname,
 					'url'       => $user->user_url
