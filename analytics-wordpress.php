@@ -10,16 +10,19 @@ Author URI: https://segment.io
 Author Email: friends@segment.io
 */
 
-class Segment_IO_Analytics {
+class Segment_Analytics {
 	private static $instance;
 
 	public static function get_instance() {
 
 		if ( ! isset( self::$instance ) ) {
 
-			self::$instance = new Segment_IO_Analytics;
+			self::$instance = new Segment_Analytics;
 			self::$instance->setup_constants();
-			self::$instance->include_files();
+
+			if ( ! has_action( 'plugins_loaded', array( self::$instance, 'include_deprecated_files' ) ) ) {
+				add_action( 'plugins_loaded', array( self::$instance, 'include_deprecated_files' ), 20 );
+			}
 
 		}
 
@@ -29,22 +32,22 @@ class Segment_IO_Analytics {
 	public function setup_constants() {
 
 		// Set the core file path
-		define( 'SEG_IO_FILE_PATH', dirname( __FILE__ ) );
+		define( 'SEG_FILE_PATH', dirname( __FILE__ ) );
 
 		// Define the path to the plugin folder
-		define( 'SEG_IO_DIR_NAME',  basename( SEG_IO_FILE_PATH ) );
+		define( 'SEG_DIR_NAME',  basename( SEG_FILE_PATH ) );
 
 		// Define the URL to the plugin folder
-		define( 'SEG_IO_FOLDER', dirname( plugin_basename( __FILE__ ) ) );
-		define( 'SEG_IO_URL'   , plugins_url( '', __FILE__ ) );
+		define( 'SEG_FOLDER', dirname( plugin_basename( __FILE__ ) ) );
+		define( 'SEG_URL'   , plugins_url( '', __FILE__ ) );
 
 	}
 
-	public function include_files() {
+	public function include_deprecated_files() {
 
 		// Include old files for back compat
-		include_once( SEG_IO_FILE_PATH . '/class.analytics.php' );
-		include_once( SEG_IO_FILE_PATH . '/class.analytics-wordpress.php' );
+		include_once( SEG_FILE_PATH . '/class.analytics.php' );
+		include_once( SEG_FILE_PATH . '/class.analytics-wordpress.php' );
 
 	}
 
@@ -55,7 +58,7 @@ class Segment_IO_Analytics {
 			return;
 		}
 
-		include_once( SEG_IO_FILE_PATH . '/templates/snippet.php' );
+		include_once( SEG_FILE_PATH . '/templates/snippet.php' );
 
 	}
 
@@ -65,21 +68,32 @@ class Segment_IO_Analytics {
 		// Set the proper `library` option so we know where the API calls come from.
 		$options['library'] = 'analytics-wordpress';
 
-		include_once( SEG_IO_FILE_PATH. '/templates/identify.php' );
+		include_once( SEG_FILE_PATH. '/templates/identify.php' );
 	}
  
 	// Render a Javascript `track` call.
-	public static function track( $event, $properties = array(), $options = array() ) {
+	public static function track( $event, $properties = array(), $options = array(), $http_event = false ) {
 
 		// Set the proper `library` option so we know where the API calls come from.
 		$options['library'] = 'analytics-wordpress';
 
-		include_once( SEG_IO_FILE_PATH . '/templates/track.php' );
+		include_once( SEG_FILE_PATH . '/templates/track.php' );
+	}
+
+	public static function page( $category = '', $name = '', $properties = array(), $options = array(), $http_event = false ) {
+
+		include_once( SEG_FILE_PATH . '/templates/page.php' );
+
+	}
+
+	public static function alias( $from, $to, $context = '' ) {
+
+		include_once( SEG_FILE_PATH . '/templates/alias.php' );
 	}
 
 }
 
-class Segment_IO_Analytics_WordPress {
+class Segment_Analytics_WordPress {
 
 	const SLUG    = 'analytics';
 	const VERSION = '0.6';
@@ -123,9 +137,9 @@ class Segment_IO_Analytics_WordPress {
 
 	public static function get_instance() {
 		
-		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Segment_IO_Analytics_WordPress ) ) {
+		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Segment_Analytics_WordPress ) ) {
 			
-			self::$instance = new Segment_IO_Analytics_WordPress;
+			self::$instance = new Segment_Analytics_WordPress;
 			self::$instance->load_textdomain();
 			self::$instance->admin_hooks();
 			self::$instance->frontend_hooks();
@@ -135,8 +149,8 @@ class Segment_IO_Analytics_WordPress {
 				self::$instance->init_settings();
 			}
 
-			self::$instance->analytics = Segment_IO_Analytics::get_instance();
-
+			self::$instance->analytics = Segment_Analytics::get_instance();
+			self::$instance->include_files();
 		}
 
 		return self::$instance;
@@ -154,14 +168,26 @@ class Segment_IO_Analytics_WordPress {
 
 	}
 
+	public function include_files() {
+	
+		do_action( 'segment_pre_include_files', self::$instance );
+
+		include_once( SEG_FILE_PATH . '/class.segment-cookie.php' );
+		include_once( SEG_FILE_PATH . '/integrations/ecommerce.php' );
+
+		do_action( 'segment_include_files', self::$instance );
+	}
+
 	public function frontend_hooks() {
 
 		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
+		add_action( 'admin_head'       , array( $this, 'wp_head' )       , 9    );
 		add_action( 'login_head'       , array( $this, 'wp_head' )       , 9    );
 		add_action( 'wp_footer'        , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'login_footer'     , array( $this, 'wp_footer' )     , 9    );
+		add_action( 'admin_footer'     , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
-		add_action( 'wp_login'         , array( $this, 'login_event' ), 9, 2 );
+		add_action( 'wp_login'         , array( $this, 'login_event'    ), 9, 2 );
 	}
 
 	public function init_settings() {
@@ -178,30 +204,30 @@ class Segment_IO_Analytics_WordPress {
 		$this->set_settings( $settings );
 	}
 
-	private function __construct() {}
+	public function __construct() {}
 
 	public function load_textdomain() {
 		// Set filter for plugin's languages directory
-		$segment_io_lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
-		$segment_io_lang_dir = apply_filters( 'segment_io_languages_directory', $segment_io_lang_dir );
+		$segment_lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
+		$segment_lang_dir = apply_filters( 'segment_languages_directory', $segment_lang_dir );
 
 		// Traditional WordPress plugin locale filter
-		$locale        = apply_filters( 'plugin_locale',  get_locale(), 'segment-io' );
-		$mofile        = sprintf( '%1$s-%2$s.mo', 'segment-io', $locale );
+		$locale = apply_filters( 'plugin_locale',  get_locale(), 'segment' );
+		$mofile = sprintf( '%1$s-%2$s.mo', 'segment', $locale );
 
 		// Setup paths to current locale file
-		$mofile_local  = $segment_io_lang_dir . $mofile;
-		$mofile_global = WP_LANG_DIR . '/segment-io/' . $mofile;
+		$mofile_local  = $segment_lang_dir . $mofile;
+		$mofile_global = WP_LANG_DIR . '/segment/' . $mofile;
 
 		if ( file_exists( $mofile_global ) ) {
-			// Look in global /wp-content/languages/segment-io folder
-			load_textdomain( 'segment-io', $mofile_global );
+			// Look in global /wp-content/languages/segment folder
+			load_textdomain( 'segment', $mofile_global );
 		} elseif ( file_exists( $mofile_local ) ) {
 			// Look in local /wp-content/plugins/analytics-wordpress/languages/ folder
-			load_textdomain( 'segment-io', $mofile_local );
+			load_textdomain( 'segment', $mofile_local );
 		} else {
 			// Load the default language files
-			load_plugin_textdomain( 'segment-io', false, $segment_io_lang_dir );
+			load_plugin_textdomain( 'segment', false, $segment_lang_dir );
 		}
 	}
 
@@ -232,24 +258,26 @@ class Segment_IO_Analytics_WordPress {
 
 		// Track a custom page view event if the current page merits it.
 		$track = $this->get_current_page_track();
+		$page  = $this->get_current_page();
 
 		if ( $track ) {
-			self::$instance->analytics->track( $track['event'], $track['properties'] );
+			$http_event = isset( $track['http_event'] ) ? $track['http_event'] : false;
+			self::$instance->analytics->track( $track['event'], $track['properties'], '', $http_event );
+		}
+
+		if ( $page ) {
+			self::$instance->analytics->page( $page['page'], $page['properties'] );
 		}
 	}
 
 	public function insert_comment( $id, $comment ) {
-		$commenter = wp_get_current_commenter();
-		$hash      = md5( json_encode( $commenter ) );
 
-		setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		Segment_Cookie::set_cookie( 'left_comment', md5( json_encode( wp_get_current_commenter() ) ) );
 	}
 
 	public function login_event( $login, $user ) {
 
-		$hash = md5( json_encode( $user ) );
-
-		setcookie( 'segment_logged_in_' . COOKIEHASH, $hash, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		Segment_Cookie::set_cookie( 'logged_in', md5( json_encode( $user ) ) );
 	}
 
 	public function plugin_action_links( $links, $file ) {
@@ -318,21 +346,23 @@ class Segment_IO_Analytics_WordPress {
 			$settings['track_archives']    = isset( $_POST['track_archives'] );
 			$settings['track_comments']    = isset( $_POST['track_comments'] );
 			$settings['track_searches']    = isset( $_POST['track_searches'] );
+			$settings['track_logins']      = isset( $_POST['track_logins'] );
+			$settings['track_login_page']  = isset( $_POST['track_login_page'] );
 
 			$this->set_settings( $settings );
 		}
 
-		include_once( SEG_IO_FILE_PATH . '/templates/settings.php');
+		include_once( SEG_FILE_PATH . '/templates/settings.php');
 	}
 
 	// Get our plugin's settings.
 	private function get_settings() {
-		return apply_filters( 'segment_io_get_settings', get_option( $this->option ), $this );
+		return apply_filters( 'segment_get_settings', get_option( $this->option ), $this );
 	}
 
 	// Store new settings for our plugin.
 	private function set_settings( $settings ) {
-		return update_option( $this->option, $settings );
+		return update_option( $this->option, apply_filters( 'segment_set_settings', $settings, $this ) );
 	}
 
 	// Based on the current user or commenter, see if we have enough information
@@ -353,7 +383,6 @@ class Segment_IO_Analytics_WordPress {
 				'traits'  => array(
 					'username'  => $user->user_login,
 					'email'     => $user->user_email,
-					'name'      => $user->display_name,
 					'firstName' => $user->user_firstname,
 					'lastName'  => $user->user_lastname,
 					'url'       => $user->user_url
@@ -378,16 +407,43 @@ class Segment_IO_Analytics_WordPress {
 			$identify['traits'] = array_filter( $identify['traits'] );
 		}
 
-		return apply_filters( 'segment_io_get_current_user_identify', $identify, $settings, $this );
+		return apply_filters( 'segment_get_current_user_identify', $identify, $settings, $this );
 	}
 
 	// Based on the current page, get the event and properties that should be
 	// tracked for the custom page view event. Getting the title for a page is
 	// confusing depending on what type of page it is... so reference this:
 	// http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
+	
 	private function get_current_page_track() {
 
 		$settings = $this->get_settings();
+
+		// Login Event
+		// --------
+		if ( $settings['track_logins'] ) {
+
+			$user = wp_get_current_user();
+			$hash = md5( json_encode( $user ) );
+
+			if ( Segment_Cookie::get_cookie( 'logged_in', $hash ) ) {
+				
+				$track = array(
+					'event'      => 'Logged In',
+					'properties' => array(
+						'username'  => $user->user_login,
+						'email'     => $user->user_email,
+						'name'      => $user->display_name,
+						'firstName' => $user->user_firstname,
+						'lastName'  => $user->user_lastname,
+						'url'       => $user->user_url
+					),
+					'http_event' => 'logged_in'
+				);
+
+			}
+
+		}
 
 		// Posts
 		// -----
@@ -470,37 +526,15 @@ class Segment_IO_Analytics_WordPress {
 			$commenter = wp_get_current_commenter();
 			$hash      = md5( json_encode( $commenter ) );
 
-			if ( isset( $_COOKIE['segment_left_comment_' . COOKIEHASH] ) && $hash === $_COOKIE['segment_left_comment_' . COOKIEHASH] ) {
+			if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
 
 				$track = array(
 					'event'      => 'Commented',
 					'properties' => array(
 						'commenter' => $commenter
-					)
+					),
+					'http_event' => 'left_comment'
 				);
-
-				setcookie( 'segment_left_comment_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
-			}
-
-		}
-
-		// Login Event
-		// --------
-		if ( $settings['track_logins'] ) {
-
-			$user = wp_get_current_user();
-			$hash = md5( json_encode( $user ) );
-
-			if ( isset( $_COOKIE['segment_logged_in_' . COOKIEHASH] ) && $hash === $_COOKIE['segment_left_comment_' . COOKIEHASH] ) {
-
-				$track = array(
-					'event'      => 'Logged In',
-					'properties' => array(
-						'user' => $user
-					)
-				);
-
-				setcookie( 'segment_logged_in_' . COOKIEHASH, $hash, time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 			}
 
 		}
@@ -547,7 +581,27 @@ class Segment_IO_Analytics_WordPress {
 			$track['properties'] = array_filter( $track['properties'] );
 		}
 
-		return apply_filters( 'segment_io_get_current_page_track', $track, $settings, $this );
+		return apply_filters( 'segment_get_current_page_track', $track, $settings, $this );
+	}
+
+
+	private function get_current_page() {
+
+		$settings = $this->get_settings();
+
+		$page = apply_filters( 'segment_get_current_page', false, $settings, $this );
+
+		if ( $page ) {
+			$page['properties'] = is_array( $page['properties'] ) ? $page['properties'] : array();
+			// All of these are checking for pages, and we don't want that to throw
+			// off Google Analytics's bounce rate, so mark them `noninteraction`.
+			$page['properties']['noninteraction'] = true;
+
+			// Clean out empty properties before sending it back.
+			$page['properties'] = array_filter( $page['properties'] );
+		}
+
+		return apply_filters( 'segment_get_current_page', $page, $settings, $this );
 	}
 
 	private function clean_array( $array ) {
@@ -556,4 +610,4 @@ class Segment_IO_Analytics_WordPress {
 
 }
 
-add_action( 'plugins_loaded', 'Segment_IO_Analytics_WordPress::get_instance' );
+add_action( 'plugins_loaded', 'Segment_Analytics_WordPress::get_instance' );
