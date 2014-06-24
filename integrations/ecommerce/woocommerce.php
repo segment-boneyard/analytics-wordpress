@@ -11,10 +11,8 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		$this->register_hook( 'segment_get_current_page_track', 'removed_from_cart', 2, $this );
 
 		/* HTTP actions */
-		add_action( 'wpsc_add_to_cart', array( $this, 'add_to_cart' ), 10, 2 );
-		/* When WPeC 3.9 is the min. version for this plugin, we'll use `wpsc_remove_item` */
-		add_action( 'wpsc_refresh_item', array( $this, 'remove_from_cart' ), 10 );
-
+		add_action( 'woocommerce_add_to_cart'                   , array( $this, 'add_to_cart' )     , 10, 3 );
+		add_action( 'woocommerce_before_cart_item_quantity_zero', array( $this, 'remove_from_cart' ), 10 );
 	}
 	
 	public function viewed_category() {
@@ -53,14 +51,18 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		return $track;
 	}
 
-	public function add_to_cart( $product, $cart_item ) {
+	public function add_to_cart( $key, $id, $quantity ) {
+		
+		$items     = WC()->cart->get_cart();
+		$cart_item = $items[ $key ];
 
 		Segment_Cookie::set_cookie( 'added_to_cart', json_encode( 
 				array( 
-					'ID'       => $product->ID, 
-					'quantity' => $cart_item->quantity,
-					'name'     => $product->post_title,
-					'price'    => $cart_item->unit_price
+					'ID'       => $id, 
+					'quantity' => $quantity,
+					'name'     => $cart_item['data']->post->post_title,
+					'price'    => $cart_item['data']->get_price(),
+					'key'      => $key
 				)
 			) 
 		);
@@ -73,15 +75,17 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 		if ( Segment_Cookie::get_cookie( 'added_to_cart' ) ) {
 
-			$product = json_decode( Segment_Cookie::get_cookie( 'added_to_cart' ) );
+			$items    = WC()->cart->get_cart();
+			$product  = json_decode( Segment_Cookie::get_cookie( 'added_to_cart' ) );
+			$_product = $items[ $product->key ];
 
 			$item = array(
 				'id'       => $product->ID,
-				'sku'      => wpsc_product_sku( $product->ID ),
+				'sku'      => $_product['data']->get_sku(),
 				'name'     => $product->name,
 				'price'    => $product->price,
 				'quantity' => $product->quantity,
-				'category' => implode( ', ', wp_list_pluck( wpsc_get_product_terms( $product->ID, 'wpsc_product_category' ), 'name' ) ),
+				'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $product->ID, 'product_cat' ), 'name' ) ),
 			);
 
 			$track = array(
@@ -95,19 +99,20 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		return $track;
 	}
 
-	public function remove_from_cart( $cart_item ) {
-		if ( 0 == $cart_item->quantity ) {
-			Segment_Cookie::set_cookie( 'removed_from_cart', json_encode( 
-					array( 
-						'ID'       => $cart_item->product_id, 
-						'quantity' => 0,
-						'name'     => $cart_item->product_title,
-						'price'    => $cart_item->unit_price
-					)
-				) 
-			);
-		}
-		
+	public function remove_from_cart( $key ) {
+		$items     = WC()->cart->get_cart();
+		$cart_item = $items[ $key ];
+
+		Segment_Cookie::set_cookie( 'removed_from_cart', json_encode( 
+				array( 
+					'ID'       => $cart_item->product_id, 
+					'quantity' => 0,
+					'name'     => $cart_item['data']->post->post_title,
+					'price'    => $cart_item['data']->get_price(),
+					'key'      => $key
+				)
+			) 
+		);
 	}
 
 	public function removed_from_cart() {
@@ -116,16 +121,17 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		$track = $args[0];
 
 		if ( Segment_Cookie::get_cookie( 'removed_from_cart' ) ) {
-
-			$product = json_decode( Segment_Cookie::get_cookie( 'removed_from_cart' ) );
+			$items    = WC()->cart->get_cart();
+			$product  = json_decode( Segment_Cookie::get_cookie( 'removed_from_cart' ) );
+			$_product = $items[ $product->key ];
 
 			$item = array(
 				'id'       => $product->ID,
-				'sku'      => wpsc_product_sku( $product->ID ),
+				'sku'      => $_product['data']->get_sku(),
 				'name'     => $product->name,
 				'price'    => $product->price,
 				'quantity' => 0,
-				'category' => implode( ', ', wp_list_pluck( wpsc_get_product_terms( $product->ID, 'wpsc_product_category' ), 'name' ) ),
+				'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $product->ID, 'product_cat' ), 'name' ) ),
 			);
 
 			$track = array(
