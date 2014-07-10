@@ -16,7 +16,7 @@ class Segment_Analytics {
 	 * The singleton instance of Segment_Analytics.
 	 *
 	 * @access private
-	 * @var array
+	 * @var Segment_Analytics
 	 * @since 1.0.0
 	 */
 	private static $instance;
@@ -184,7 +184,7 @@ class Segment_Analytics_WordPress {
 	 * The singleton instance of Segment_Analytics_WordPress.
 	 *
 	 * @access private
-	 * @var array
+	 * @var Segment_Analytics_WordPress
 	 * @since 1.0.0
 	 */
 	private static $instance;
@@ -193,7 +193,7 @@ class Segment_Analytics_WordPress {
 	 * The singleton instance of Segment_Analytics, for use in our class.
 	 *
 	 * @access private
-	 * @var object
+	 * @var Segment_Analytics
 	 * @since 1.0.0
 	 */
 	private $analytics;
