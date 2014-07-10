@@ -1,7 +1,20 @@
-<?php 
+<?php
 
 class Segment_Commerce_WPSC extends Segment_Commerce {
 
+	/**
+	 * Init method registers two types of hooks: Standard hooks, and those fired in-between page loads.
+	 *
+	 * For all our events, we hook into either `segment_get_current_page` or `segment_get_current_page_track`
+	 * depending on the API we want to use.
+	 *
+	 * For events that occur between page loads, we hook into the appropriate action and set a Segment_Cookie
+	 * instance to check on the next page load.
+	 *
+	 * @access public
+	 * @since  1.0.0
+	 *
+	 */
 	public function init() {
 
 		$this->register_hook( 'segment_get_current_page'      , 'viewed_category'  , 1, $this );
@@ -17,7 +30,18 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 		add_action( 'wpsc_refresh_item', array( $this, 'remove_from_cart' ), 10 );
 
 	}
-	
+
+	/**
+	 * Adds category name to analytics.page()
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 *
+	 * @return array Filtered array of name and properties for analytics.page().
+	 */
 	public function viewed_category() {
 
 		$args = func_get_args();
@@ -32,7 +56,30 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 
 		return $page;
 	}
-
+	/**
+	 * Adds product information to a Segment_Cookie when item is added to cart.
+	 *
+	 * @param string $key      Key name for item in cart.  A hash.
+	 * @param int    $id       Product ID
+	 * @param int    $quantity Item quantity
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 */
+	/**
+	 * Adds product properties to analytics.track() when product is viewed.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 *
+	 * @return array Filtered array of name and properties for analytics.track().
+	 */
 	public function viewed_product() {
 
 		$args  = func_get_args();
@@ -50,23 +97,47 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 					)
 				);
 		}
-		
+
 		return $track;
 	}
 
+	/**
+	 * Adds product information to a Segment_Cookie when item is added to cart.
+	 *
+	 * @param string $key      Key name for item in cart.  A hash.
+	 * @param int    $id       Product ID
+	 * @param int    $quantity Item quantity
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 */
 	public function add_to_cart( $product, $cart_item ) {
 
-		Segment_Cookie::set_cookie( 'added_to_cart', json_encode( 
-				array( 
-					'ID'       => $product->ID, 
+		Segment_Cookie::set_cookie( 'added_to_cart', json_encode(
+				array(
+					'ID'       => $product->ID,
 					'quantity' => $cart_item->quantity,
 					'name'     => $product->post_title,
 					'price'    => $cart_item->unit_price
 				)
-			) 
+			)
 		);
 	}
 
+	/**
+	 * Adds product properties to analytics.track() when product added to cart.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 *
+	 * @return array Filtered array of name and properties for analytics.track().
+	 */
 	public function added_to_cart() {
 		$args = func_get_args();
 
@@ -96,21 +167,43 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 		return $track;
 	}
 
+	/**
+	 * Adds product information to a Segment_Cookie when item is removed from cart.
+	 *
+	 * @param string $key      Key name for item in cart.  A hash.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 */
 	public function remove_from_cart( $cart_item ) {
 		if ( 0 == $cart_item->quantity ) {
-			Segment_Cookie::set_cookie( 'removed_from_cart', json_encode( 
-					array( 
-						'ID'       => $cart_item->product_id, 
+			Segment_Cookie::set_cookie( 'removed_from_cart', json_encode(
+					array(
+						'ID'       => $cart_item->product_id,
 						'quantity' => 0,
 						'name'     => $cart_item->product_title,
 						'price'    => $cart_item->unit_price
 					)
-				) 
+				)
 			);
 		}
-		
+
 	}
 
+	/**
+	 * Adds product properties to analytics.track() when product is removed from cart.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 *
+	 * @return array Filtered array of name and properties for analytics.track().
+	 */
 	public function removed_from_cart() {
 		$args = func_get_args();
 
@@ -140,6 +233,17 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 		return $track;
 	}
 
+	/**
+	 * Adds product properties to analytics.track() when the order is completed successfully.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @uses  func_get_args() Because our abstract class doesn't know how many parameters are passed to each hook
+	 *                        for each different platform, we use func_get_args().
+	 *
+	 * @return array Filtered array of name and properties for analytics.track().
+	 */
 	public function completed_order() {
 		$args  = func_get_args();
 		$track = $args[0];
@@ -150,7 +254,7 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 
 			/* We like checking is_order_received(), as that's what the manual payment gateway uses. */
 			if ( $log->is_transaction_completed() || $log->is_order_received() ) {
-				
+
 				$gateway_data = $log->get_gateway_data();
 				$items        = $log->get_cart_contents();
 				$products     = array();
@@ -189,6 +293,11 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 	}
 
 }
+/**
+ * Bootstrapper for the Segment_Commerce_WPSC class.
+ *
+ * @since  1.0.0
+ */
 
 function segment_commerce_wpsc() {
 	$commerce = new Segment_Commerce_WPSC();

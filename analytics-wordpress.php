@@ -11,8 +11,23 @@ Author Email: friends@segment.io
 */
 
 class Segment_Analytics {
+
+	/**
+	 * The singleton instance of Segment_Analytics.
+	 *
+	 * @access private
+	 * @var array
+	 * @since 1.0.0
+	 */
 	private static $instance;
 
+	/**
+	 * Retrieves the one true instance of Segment_Analytics
+	 * Also sets up constants and includes deprecated files.
+	 *
+	 * @since  1.0.0
+	 * @return object Singleton instance of Segment_Analytics
+	 */
 	public static function get_instance() {
 
 		if ( ! isset( self::$instance ) ) {
@@ -29,6 +44,11 @@ class Segment_Analytics {
 		return self::$instance;
 	}
 
+	/**
+	 * Sets up constants for file paths, folders, URLs and directory names related to the plugin.
+	 *
+	 * @since 1.0.0
+	 */
 	public function setup_constants() {
 
 		// Set the core file path
@@ -43,6 +63,12 @@ class Segment_Analytics {
 
 	}
 
+	/**
+	 * Includes deprecated files, specifically our old class names.
+	 * They simply extend their replacement classes and are only includes if other plugins do not define those classes.
+	 *
+	 * @since 1.0.0
+	 */
 	public function include_deprecated_files() {
 
 		// Include old files for back compat
@@ -51,9 +77,16 @@ class Segment_Analytics {
 
 	}
 
-	// Render the Segment.io Javascript snippet.
+	/**
+	 * Render the Segment.io Javascript snippet.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  array $settings Settings options array.
+	 * @param  bool  $ignore   Whether or not to ignore the call and avoid outputting the API key snippet.
+	 */
 	public static function initialize( $settings, $ignore = false ) {
-		
+
 		if ( ! isset( $settings['api_key'] ) || $settings['api_key'] == '' ) {
 			return;
 		}
@@ -62,16 +95,36 @@ class Segment_Analytics {
 
 	}
 
-	// Render a Javascript `identify` call.
+	/**
+	 * Render a Javascript `identify` call
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  int|string  $user_id Current User ID.
+	 *                              Generated via get_current_user_id() if logged in, anonymous user ID if not.
+	 * @param  array       $traits  Array of traits to pass to Segment.
+	 * @param  array       $options Array of options to pass to Segment.
+	 */
 	public static function identify( $user_id, $traits = array(), $options = array() ) {
-		
+
 		// Set the proper `library` option so we know where the API calls come from.
 		$options['library'] = 'analytics-wordpress';
 
 		include_once( SEG_FILE_PATH. '/templates/identify.php' );
 	}
- 
-	// Render a Javascript `track` call.
+
+	/**
+	 * Render a Javascript `track` call
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  string  $event       The name of the event to pass to Segment.
+	 * @param  array   $properties  An array of properties to pass to Segment.
+	 * @param  array   $options     An array of options to pass to Segment.
+	 * @param  boolean $http_event  Whether or not the event is occurring over HTTP, as opposed to on page load.
+	 *                              This is helpful to track events that occur between page loads, like commenting.
+	 *
+	 */
 	public static function track( $event, $properties = array(), $options = array(), $http_event = false ) {
 
 		// Set the proper `library` option so we know where the API calls come from.
@@ -80,12 +133,34 @@ class Segment_Analytics {
 		include_once( SEG_FILE_PATH . '/templates/track.php' );
 	}
 
+	/**
+	 * Render a Javascript `track` call
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  string  $category    Category (or name) of event
+	 * @param  string  $name        Optional, but if set, category must be set as well.
+	 * @param  array   $properties  An array of properties to pass to Segment.
+	 * @param  array   $options     An array of options to pass to Segment.
+	 * @param  boolean $http_event  Whether or not the event is occurring over HTTP, as opposed to on page load.
+	 *                              This is helpful to track events that occur between page loads, like commenting.
+	 */
 	public static function page( $category = '', $name = '', $properties = array(), $options = array(), $http_event = false ) {
 
 		include_once( SEG_FILE_PATH . '/templates/page.php' );
 
 	}
 
+	/**
+	 * Creates an alias between an anonymous ID and a newly created user ID.
+	 * Primarily used for MixPanel.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  int|string $from    The anonymous ID that we're aliasing from.
+	 * @param  int|string $to      The newly created User ID we are aliasing to.
+	 * @param  string     $context Optional context parameter to be passed to Segment.
+	 */
 	public static function alias( $from, $to, $context = '' ) {
 
 		include_once( SEG_FILE_PATH . '/templates/alias.php' );
@@ -95,13 +170,50 @@ class Segment_Analytics {
 
 class Segment_Analytics_WordPress {
 
+	/**
+	 * Slug used in page and menu names
+	 */
 	const SLUG    = 'analytics';
-	const VERSION = '0.6';
 
+	/**
+	 * Current plugin version.
+	 */
+	const VERSION = '1.0.0';
+
+	/**
+	 * The singleton instance of Segment_Analytics_WordPress.
+	 *
+	 * @access private
+	 * @var array
+	 * @since 1.0.0
+	 */
 	private static $instance;
 
+	/**
+	 * The singleton instance of Segment_Analytics, for use in our class.
+	 *
+	 * @access private
+	 * @var object
+	 * @since 1.0.0
+	 */
 	private $analytics;
+
+	/**
+	 * The name of our options array.
+	 *
+	 * @access private
+	 * @var string
+	 * @since 1.0.0
+	 */
 	private $option   = 'analytics_wordpress_options';
+
+	/**
+	 * The default values for our options array.
+	 *
+	 * @access private
+	 * @var array
+	 * @since 1.0.0
+	 */
 	private $defaults = array(
 		// Your Segment.io API key that we'll use to initialize analytics.js.
 		'api_key'           => '',
@@ -135,10 +247,16 @@ class Segment_Analytics_WordPress {
 		'track_searches'    => true
 	);
 
+	/**
+	 * Retrieves the one true instance of Segment_Analytics_WordPress
+	 *
+	 * @since  1.0.0
+	 * @return object Singleton instance of Segment_Analytics_WordPress
+	 */
 	public static function get_instance() {
-		
+
 		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Segment_Analytics_WordPress ) ) {
-			
+
 			self::$instance = new Segment_Analytics_WordPress;
 			self::$instance->load_textdomain();
 			self::$instance->admin_hooks();
@@ -156,6 +274,11 @@ class Segment_Analytics_WordPress {
 		return self::$instance;
 	}
 
+	/**
+	 * Hooks into actions and filters that affect the administration areas.
+	 *
+	 * @since  1.0.0
+	 */
 	public function admin_hooks() {
 
 		if ( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )  {
@@ -168,8 +291,16 @@ class Segment_Analytics_WordPress {
 
 	}
 
+	/**
+	 * Includes core classes.
+	 * Currently includes Segment_Cookie and eCommerce bootstrap.
+	 *
+	 * @uses  do_action() Allows other plugins to hook in before or after everything is bootstrapped.
+	 *
+	 * @since  1.0.0
+	 */
 	public function include_files() {
-	
+
 		do_action( 'segment_pre_include_files', self::$instance );
 
 		include_once( SEG_FILE_PATH . '/class.segment-cookie.php' );
@@ -178,6 +309,12 @@ class Segment_Analytics_WordPress {
 		do_action( 'segment_include_files', self::$instance );
 	}
 
+	/**
+	 * Hooks into actions and filters that affect the front-end.
+	 * That is to say, this is where the magic happens.
+	 *
+	 * @since  1.0.0
+	 */
 	public function frontend_hooks() {
 
 		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
@@ -190,6 +327,12 @@ class Segment_Analytics_WordPress {
 		add_action( 'wp_login'         , array( $this, 'login_event'    ), 9, 2 );
 	}
 
+	/**
+	 * Gets and sets settings.
+	 * Will likely be deprecated, or at least refactored, as we move to the Settings API.
+	 *
+	 * @since 1.0.0
+	 */
 	public function init_settings() {
 
 		// Make sure our settings object exists and is backed by our defaults.
@@ -204,8 +347,19 @@ class Segment_Analytics_WordPress {
 		$this->set_settings( $settings );
 	}
 
+	/**
+	 * Empty constructor, as we prefer to get_instance().
+	 *
+	 * @since 1.0.0
+	 *
+	 */
 	public function __construct() {}
 
+	/**
+	 * Loads the properly localized PO/MO files
+	 *
+	 * @since  1.0.0
+	 */
 	public function load_textdomain() {
 		// Set filter for plugin's languages directory
 		$segment_lang_dir = dirname( plugin_basename( __FILE__ ) ) . '/languages/';
@@ -231,6 +385,11 @@ class Segment_Analytics_WordPress {
 		}
 	}
 
+	/**
+	 * Outputs analytics javascript and analytics.identify() snippet in head for admin, login page and wp_head.
+	 *
+	 * @since 1.0.0
+	 */
 	public function wp_head() {
 
 		// Figure out whether the user should be ignored or not.
@@ -247,11 +406,16 @@ class Segment_Analytics_WordPress {
 		self::$instance->analytics->initialize( $settings, $ignore );
 	}
 
+	/**
+	 * Outputs analytics.track()/.page()/ snippet in head for admin, login page and wp_footer.
+	 *
+	 * @since 1.0.0
+	 */
 	public function wp_footer() {
 
 		// Identify the user if the current user merits it.
 		$identify = $this->get_current_user_identify();
-		
+
 		if ( $identify ) {
 			self::$instance->analytics->identify( $identify['user_id'], $identify['traits'] );
 		}
@@ -270,18 +434,42 @@ class Segment_Analytics_WordPress {
 		}
 	}
 
+	/**
+	 * Uses Segment_Cookie::set_cookie() to notify Segment that a comment has been left.
+	 *
+	 * @param  int    $id      Comment ID. Unused.
+	 * @param  object $comment WP_Comment object Unused.
+	 *
+	 * @since 1.0.0
+	 */
 	public function insert_comment( $id, $comment ) {
 
 		Segment_Cookie::set_cookie( 'left_comment', md5( json_encode( wp_get_current_commenter() ) ) );
 	}
 
+	/**
+	 * Uses Segment_Cookie::set_cookie() to notify Segment that a user has logged in.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  string  $login Username of logged in user.
+	 * @param  WP_User $user  User object of logged in user.
+	 *
+	 */
 	public function login_event( $login, $user ) {
 
 		Segment_Cookie::set_cookie( 'logged_in', md5( json_encode( $user ) ) );
 	}
 
+	/**
+	 * Adds "Settings" link to plugin row.
+	 *
+	 * @param  array $links Array of links on plugin action row.
+	 * @param  [type] $file  [description]
+	 * @return [type]        [description]
+	 */
 	public function plugin_action_links( $links, $file ) {
-	
+
 		// Not for other plugins, silly. NOTE: This doesn't work properly when
 		// the plugin for testing is a symlink!! If you change this, test it.
 		// Note: Works fine as of 3.9, see @link: https://core.trac.wordpress.org/ticket/16953
@@ -291,44 +479,65 @@ class Segment_Analytics_WordPress {
 
 		// Add settings link to the beginning of the row of links.
 		$settings_link = '<a href="options-general.php?page=' . self::SLUG . '">Settings</a>';
-		
+
 		array_unshift( $links, $settings_link );
-		
+
 		return $links;
 	}
 
-	public function plugin_row_meta( $links, $file ) {
+	/**
+	 * Adds Settings and Documentation links to plugin row meta.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param array  $plugin_meta An array of the plugin's metadata,
+	 *                            including the version, author,
+	 *                            author URI, and plugin URI.
+	 * @param string $plugin_file Path to the plugin file, relative to the plugins directory.
+	 *
+	 * @return array        Modified array of plugin metadata.
+	 */
+	public function plugin_row_meta( $plugin_meta, $plugin_file ) {
 		// Not for other plugins, silly. NOTE: This doesn't work properly when
 		// the plugin for testing is a symlink!! If you change this, test it.
 		// Note: Works fine as of 3.9, see @link: https://core.trac.wordpress.org/ticket/16953
-		if ( $file != plugin_basename( __FILE__ ) ) {
-			return $links;	
+		if ( $plugin_file != plugin_basename( __FILE__ ) ) {
+			return $plugin_meta;
 		}
 
 		// Add a settings and docs link to the end of the row of links row of links.
 		$settings_link = '<a href="options-general.php?page=' . self::SLUG . '">Settings</a>';
 		$docs_link     = '<a href="https://segment.io/plugins/wordpress" target="_blank">Docs</a>';
-		
-		array_push( $links, $settings_link, $docs_link );
-		
-		return $links;
+
+		array_push( $plugin_meta, $settings_link, $docs_link );
+
+		return $plugin_meta;
 	}
 
+	/**
+	 * Adds "Analytics" Menu item to admin area.
+	 *
+	 * @since  1.0.0
+	 */
 	public function admin_menu() {
 
-		// Render an "Analytics" menu item in the "Settings" menu.
-		// http://codex.wordpress.org/Function_Reference/add_options_page
 		add_options_page(
-			'Analytics',                 // Page Title
-			'Analytics',                 // Menu Title
-			'manage_options',            // Capability Required
-			self::SLUG,                  // Menu Slug
-			array( $this, 'admin_page' ) // Function
+			apply_filters( 'segment_admin_menu_page_title', 'Analytics' ),           // Page Title
+			apply_filters( 'segment_admin_menu_menu_title', 'Analytics' ),           // Menu Title
+			apply_filters( 'segment_admin_settings_capability', 'manage_options' ),  // Capability Required
+			self::SLUG,                                                              // Menu Slug
+			array( $this, 'admin_page' )                                             // Function
 		);
 
 	}
 
+	/**
+	 * The callback used to build out the admin settings area.
+	 *
+	 * @since 1.0.0
+	 */
 	public function admin_page() {
+
 		// Make sure the user has the required permissions to view the settings.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( 'Sorry, you don\'t have the permissions to access this page.' );
@@ -355,22 +564,46 @@ class Segment_Analytics_WordPress {
 		include_once( SEG_FILE_PATH . '/templates/settings.php');
 	}
 
-	// Get our plugin's settings.
+	/**
+	 * Retrieves settings array.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @uses apply_filters() Applies 'segment_get_settings' filter to allow other developers to override.
+	 *
+	 * @return array Array of settings.
+	 */
 	private function get_settings() {
 		return apply_filters( 'segment_get_settings', get_option( $this->option ), $this );
 	}
 
-	// Store new settings for our plugin.
+	/**
+	 * Updates settings array.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  array $settings Array of settings
+	 * @uses   apply_filters() Applies 'segment_get_settings' filter to allow other developers to override.
+	 *
+	 * @return array Array of settings.
+	 */
 	private function set_settings( $settings ) {
 		return update_option( $this->option, apply_filters( 'segment_set_settings', $settings, $this ) );
 	}
 
-	// Based on the current user or commenter, see if we have enough information
-	// to record an `identify` call. Since commenters don't have IDs, we
-	// identify everyone by their email address.
+	/**
+	 * Based on the current user or commenter, see if we have enough information
+	 * to record an `identify` call. Since commenters don't have IDs, we
+	 * identify everyone by their email address.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return bool|array Returns false if there is no commenter or logged in user
+	 *                    An array of the user ID and traits if there is an authenticated user.
+	 */
 	private function get_current_user_identify() {
 		$settings  = $this->get_settings();
-		
+
 		$user      = wp_get_current_user();
 		$commenter = wp_get_current_commenter();
 		$identify  = false;
@@ -407,14 +640,21 @@ class Segment_Analytics_WordPress {
 			$identify['traits'] = array_filter( $identify['traits'] );
 		}
 
+		/**
+		 * Allows developers to modify the entire $identify call.
+		 *
+		 * @since 1.0.0
+		 */
 		return apply_filters( 'segment_get_current_user_identify', $identify, $settings, $this );
 	}
 
-	// Based on the current page, get the event and properties that should be
-	// tracked for the custom page view event. Getting the title for a page is
-	// confusing depending on what type of page it is... so reference this:
-	// http://core.trac.wordpress.org/browser/tags/3.5.1/wp-includes/general-template.php#L0
-	
+	/**
+	 * Used to track the current event.  Used for analytics.track().
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return array Array containing the page being tracked along with any additional properties.
+	 */
 	private function get_current_page_track() {
 
 		$settings = $this->get_settings();
@@ -427,7 +667,7 @@ class Segment_Analytics_WordPress {
 			$hash = md5( json_encode( $user ) );
 
 			if ( Segment_Cookie::get_cookie( 'logged_in', $hash ) ) {
-				
+
 				$track = array(
 					'event'      => 'Logged In',
 					'properties' => array(
@@ -584,12 +824,18 @@ class Segment_Analytics_WordPress {
 		return apply_filters( 'segment_get_current_page_track', $track, $settings, $this );
 	}
 
-
+	/**
+	 * Used to track the current page.  Used for analytics.page().
+	 * Unlike get_current_page_track(), we use this primarily as a pub-sub observer for other core events.
+	 * This makes it much more manageable for other developers to hook and unhook from it as needed.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return array Array containing the page being tracked along with any additional properties.
+	 */
 	private function get_current_page() {
 
-		$settings = $this->get_settings();
-
-		$page = apply_filters( 'segment_get_current_page', false, $settings, $this );
+		$page = apply_filters( 'segment_get_current_page', false, $this->get_settings(), $this );
 
 		if ( $page ) {
 			$page['properties'] = is_array( $page['properties'] ) ? $page['properties'] : array();
@@ -601,9 +847,19 @@ class Segment_Analytics_WordPress {
 			$page['properties'] = array_filter( $page['properties'] );
 		}
 
-		return apply_filters( 'segment_get_current_page', $page, $settings, $this );
+		return $page;
 	}
 
+	/**
+	 * Kept for backwards compatibility, as clean_array() used to be, essentially, a round-about to array_filter().
+	 *
+	 * @since  1.0.0
+	 *
+	 * @deprecated
+	 *
+	 * @param  array $array Array to clean.
+	 * @return array        Filtered array.
+	 */
 	private function clean_array( $array ) {
 		return array_filter( $array );
 	}
