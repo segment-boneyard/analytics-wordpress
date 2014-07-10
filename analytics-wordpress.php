@@ -426,7 +426,7 @@ class Segment_Analytics_WordPress {
 
 		if ( $track ) {
 			$http_event = isset( $track['http_event'] ) ? $track['http_event'] : false;
-			self::$instance->analytics->track( $track['event'], $track['properties'], '', $http_event );
+			self::$instance->analytics->track( $track['event'], $track['properties'], array(), $http_event );
 		}
 
 		if ( $page ) {
