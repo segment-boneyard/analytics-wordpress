@@ -143,9 +143,9 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 
 		$track = $args[0];
 
-		if ( Segment_Cookie::get_cookie( 'added_to_cart' ) ) {
+		if ( false !== ( $product = Segment_Cookie::get_cookie( 'added_to_cart' ) ) ) {
 
-			$product = json_decode( Segment_Cookie::get_cookie( 'added_to_cart' ) );
+			$product = json_decode( $product );
 
 			$item = array(
 				'id'       => $product->ID,
@@ -209,9 +209,9 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 
 		$track = $args[0];
 
-		if ( Segment_Cookie::get_cookie( 'removed_from_cart' ) ) {
+		if ( false !== ( $product = Segment_Cookie::get_cookie( 'removed_from_cart' ) ) ) {
 
-			$product = json_decode( Segment_Cookie::get_cookie( 'removed_from_cart' ) );
+			$product = json_decode( $product );
 
 			$item = array(
 				'id'       => $product->ID,

@@ -135,10 +135,10 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 		$track = $args[0];
 
-		if ( Segment_Cookie::get_cookie( 'added_to_cart' ) ) {
+		if ( false !== ( $product = Segment_Cookie::get_cookie( 'added_to_cart' ) ) ) {
 
 			$items    = WC()->cart->get_cart();
-			$product  = json_decode( Segment_Cookie::get_cookie( 'added_to_cart' ) );
+			$product  = json_decode( $product );
 			$_product = $items[ $product->key ];
 
 			$item = array(
@@ -204,9 +204,9 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 		$track = $args[0];
 
-		if ( Segment_Cookie::get_cookie( 'removed_from_cart' ) ) {
+		if ( false !== ( $product = Segment_Cookie::get_cookie( 'removed_from_cart' ) ) ) {
 			$items    = WC()->cart->get_cart();
-			$product  = json_decode( Segment_Cookie::get_cookie( 'removed_from_cart' ) );
+			$product  = json_decode( $product );
 			$_product = $items[ $product->key ];
 
 			$item = array(
