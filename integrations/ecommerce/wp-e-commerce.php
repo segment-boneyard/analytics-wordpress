@@ -87,7 +87,7 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 
 		if ( is_singular( 'wpsc-product' ) ) {
 				$track = array(
-					'event'      => 'Viewed Product',
+					'event'      => __( 'Viewed Product', 'segment' ),
 					'properties' => array(
 						'id'       => get_the_ID(),
 						'sku'      => wpsc_product_sku(),
@@ -157,7 +157,7 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 			);
 
 			$track = array(
-				'event'      => 'Added Product',
+				'event'      => __( 'Added Product', 'segment' ),
 				'properties' => $item,
 				'http_event' => 'added_to_cart'
 			);
@@ -223,7 +223,7 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 			);
 
 			$track = array(
-				'event'      => 'Removed Product',
+				'event'      => __( 'Removed Product', 'segment' ),
 				'properties' => $item,
 				'http_event' => 'removed_from_cart'
 			);
@@ -275,7 +275,7 @@ class Segment_Commerce_WPSC extends Segment_Commerce {
 				}
 
 				$track = array(
-					'event'      => 'Completed Order',
+					'event'      => __( 'Completed Order', 'segment' ),
 					'properties' => array(
 						'id'       => $log->get( 'id' )        ,
 						'total'    => $log->get( 'totalprice' ),

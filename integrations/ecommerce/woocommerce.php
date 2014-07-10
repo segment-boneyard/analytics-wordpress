@@ -75,7 +75,7 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 				$product = get_product( get_queried_object_id() );
 
 				$track = array(
-					'event'      => 'Viewed Product',
+					'event'      => __( 'Viewed Product', 'segment' ),
 					'properties' => array(
 						'id'       => $product->id,
 						'sku'      => $product->get_sku(),
@@ -151,7 +151,7 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 			);
 
 			$track = array(
-				'event'      => 'Added Product',
+				'event'      => __( 'Added Product', 'segment' ),
 				'properties' => $item,
 				'http_event' => 'added_to_cart'
 			);
@@ -219,7 +219,7 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 			);
 
 			$track = array(
-				'event'      => 'Removed Product',
+				'event'      => __( 'Removed Product', 'segment' ),
 				'properties' => $item,
 				'http_event' => 'removed_from_cart'
 			);
@@ -272,7 +272,7 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 				}
 
 				$track = array(
-					'event'      => 'Completed Order',
+					'event'      => __( 'Completed Order', 'segment' ),
 					'properties' => array(
 						'id'       => $order->get_order_number(),
 						'total'    => $order->get_total(),

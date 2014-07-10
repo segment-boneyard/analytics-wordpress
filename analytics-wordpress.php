@@ -478,7 +478,7 @@ class Segment_Analytics_WordPress {
 		}
 
 		// Add settings link to the beginning of the row of links.
-		$settings_link = '<a href="options-general.php?page=' . self::SLUG . '">Settings</a>';
+		$settings_link = sprintf( '<a href="options-general.php?page=' . self::SLUG . '">%s</a>', __( 'Settings' ) );
 
 		array_unshift( $links, $settings_link );
 
@@ -506,8 +506,8 @@ class Segment_Analytics_WordPress {
 		}
 
 		// Add a settings and docs link to the end of the row of links row of links.
-		$settings_link = '<a href="options-general.php?page=' . self::SLUG . '">Settings</a>';
-		$docs_link     = '<a href="https://segment.io/plugins/wordpress" target="_blank">Docs</a>';
+		$settings_link = sprintf( '<a href="options-general.php?page=' . self::SLUG . '">%s</a>', __( 'Settings' ) );
+		$docs_link     = sprintf( '<a href="https://segment.io/plugins/wordpress" target="_blank">%s</a>', __( 'Docs', 'segment' ) );
 
 		array_push( $plugin_meta, $settings_link, $docs_link );
 
@@ -522,8 +522,8 @@ class Segment_Analytics_WordPress {
 	public function admin_menu() {
 
 		add_options_page(
-			apply_filters( 'segment_admin_menu_page_title', 'Analytics' ),           // Page Title
-			apply_filters( 'segment_admin_menu_menu_title', 'Analytics' ),           // Menu Title
+			apply_filters( 'segment_admin_menu_page_title', __( 'Analytics', 'segment' ) ), // Page Title
+			apply_filters( 'segment_admin_menu_menu_title', __( 'Analytics', 'segment' ) ), // Menu Title
 			apply_filters( 'segment_admin_settings_capability', 'manage_options' ),  // Capability Required
 			self::SLUG,                                                              // Menu Slug
 			array( $this, 'admin_page' )                                             // Function
@@ -540,7 +540,7 @@ class Segment_Analytics_WordPress {
 
 		// Make sure the user has the required permissions to view the settings.
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( 'Sorry, you don\'t have the permissions to access this page.' );
+			wp_die( __( 'Sorry, you don\'t have the permissions to access this page.', 'segment' ) );
 		}
 
 		$settings = $this->get_settings();
@@ -669,7 +669,7 @@ class Segment_Analytics_WordPress {
 			if ( Segment_Cookie::get_cookie( 'logged_in', $hash ) ) {
 
 				$track = array(
-					'event'      => 'Logged In',
+					'event'      => __( 'Logged In', 'segment' ),
 					'properties' => array(
 						'username'  => $user->user_login,
 						'email'     => $user->user_email,
@@ -694,10 +694,10 @@ class Segment_Analytics_WordPress {
 			if ( is_single() && ! is_attachment() ) {
 				$categories = implode( ', ', wp_list_pluck( get_categories( get_the_ID() ), 'name' ) );
 				$track = array(
-					'event'      => 'Viewed ' . ucfirst( get_post_type() ),
+					'event'      => sprintf( __( 'Viewed %s', 'segment' ), ucfirst( get_post_type() ) ),
 					'properties' => array(
 						'title'      => single_post_title( '', false ),
-						'category' => $categories
+						'category'   => $categories
 					)
 				);
 			}
@@ -711,13 +711,13 @@ class Segment_Analytics_WordPress {
 			// that's why we don't use it.
 			if ( is_front_page() ) {
 				$track = array(
-					'event' => 'Viewed Home Page'
+					'event' => __( 'Viewed Home Page', 'segment' )
 				);
 			}
 			// A normal WordPress page.
 			else if ( is_page() ) {
 				$track = array(
-					'event' => 'Viewed ' . single_post_title( '', false ) . ' Page'
+					'event' => sprintf( __( 'Viewed %s Page', 'segment' ), single_post_title( '', false ) ),
 				);
 			}
 		}
@@ -731,7 +731,7 @@ class Segment_Analytics_WordPress {
 			if ( is_author() ) {
 			$author = get_queried_object();
 			$track  = array(
-				'event'      => 'Viewed Author Page',
+				'event'      => __( 'Viewed Author Page', 'segment' ),
 				'properties' => array(
 					'author' => $author->display_name
 					)
@@ -741,7 +741,7 @@ class Segment_Analytics_WordPress {
 			// http://codex.wordpress.org/Function_Reference/single_tag_title
 			else if ( is_tag() ) {
 				$track = array(
-				'event'      => 'Viewed Tag Page',
+				'event'      => __( 'Viewed Tag Page', 'segment' ),
 				'properties' => array(
 					'	tag' => single_tag_title( '', false )
 					)
@@ -751,9 +751,9 @@ class Segment_Analytics_WordPress {
 			// http://codex.wordpress.org/Function_Reference/single_cat_title
 			else if ( is_category() ) {
 				$track = array(
-				'event'      => 'Viewed Category Page',
+				'event'      => __( 'Viewed Category Page', 'segment' ),
 				'properties' => array(
-						'category' => single_cat_title('', false)
+						'category' => single_cat_title( '', false )
 					)
 				);
 			}
@@ -769,7 +769,7 @@ class Segment_Analytics_WordPress {
 			if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
 
 				$track = array(
-					'event'      => 'Commented',
+					'event'      => __( 'Commented', 'segment' ),
 					'properties' => array(
 						'commenter' => $commenter
 					),
@@ -786,7 +786,7 @@ class Segment_Analytics_WordPress {
 			if ( did_action( 'login_init' ) ) {
 
 				$track = array(
-					'event'      => 'Viewed Login Page'
+					'event'      => __( 'Viewed Login Page', 'segment' )
 				);
 
 			}
@@ -799,7 +799,7 @@ class Segment_Analytics_WordPress {
 			// The search page.
 			if ( is_search() ) {
 				$track = array(
-					'event'      => 'Viewed Search Page',
+					'event'      => __( 'Viewed Search Page', 'segment' ),
 					'properties' => array(
 						'query' => get_query_var( 's' )
 					)
