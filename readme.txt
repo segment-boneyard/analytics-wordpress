@@ -56,9 +56,11 @@ So very much.  The two biggest enhancements for developers are the introduction 
 
 Beyond that, we've completely refactored the plugin to use all of the appropriate WordPress APIs (Like the Settings API) and have added a easily extendable abstract class for eCommerce platforms.  On top of all of that, all of our filters, classes, functions and methods are fully documented inline.
 
+Need to add custom settings?  By hooking into our `segment_default_settings` and `segment_settings_core_validation` filters, you can quickly and easily add your own settings to the Segment plugin.
+
 
 == Screenshots ==
-
+s
 
 == Changelog ==
 

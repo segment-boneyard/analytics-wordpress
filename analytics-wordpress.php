@@ -72,8 +72,8 @@ class Segment_Analytics {
 	public function include_deprecated_files() {
 
 		// Include old files for back compat
-		include_once( SEG_FILE_PATH . '/class.analytics.php' );
-		include_once( SEG_FILE_PATH . '/class.analytics-wordpress.php' );
+		include_once( SEG_FILE_PATH . '/includes/class.analytics.php' );
+		include_once( SEG_FILE_PATH . '/includes/class.analytics-wordpress.php' );
 
 	}
 
@@ -308,8 +308,8 @@ class Segment_Analytics_WordPress {
 
 		do_action( 'segment_pre_include_files', self::$instance );
 
-		include_once( SEG_FILE_PATH . '/class.segment-settings.php' );
-		include_once( SEG_FILE_PATH . '/class.segment-cookie.php' );
+		include_once( SEG_FILE_PATH . '/includes/class.segment-settings.php' );
+		include_once( SEG_FILE_PATH . '/includes/class.segment-cookie.php' );
 		include_once( SEG_FILE_PATH . '/integrations/ecommerce.php' );
 
 		do_action( 'segment_include_files', self::$instance );
