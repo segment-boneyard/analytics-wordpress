@@ -58,6 +58,10 @@ abstract class Segment_Commerce {
 
 		$registered_events = $this->get_registered_hooks();
 
+		if ( ! in_array( $event, $registered_events ) ) {
+			return false;
+		}
+
 		if ( ! empty( $class ) && is_callable( array( $class, $event ) ) ) {
 
 			$this->registered_events[ $hook ] = array( $class, $event );
@@ -66,7 +70,7 @@ abstract class Segment_Commerce {
 
 		} else if ( is_callable( $event ) ) {
 
-			$registered = $this->registered_events[ $hook ] = $event;
+			$this->registered_events[ $hook ] = $event;
 			$registered = add_filter( $hook, $event, 10, $args );
 
 		} else {
