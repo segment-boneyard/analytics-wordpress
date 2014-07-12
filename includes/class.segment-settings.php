@@ -168,17 +168,13 @@ class Segment_Settings {
 			$input[ $checkbox ] = isset( $input[ $checkbox ] ) ? '1' : '0';
 		}
 
-		$text_input = array( 'api_key' );
+		$text = 'api_key';
 
-		foreach ( $text_input as $text ) {
-			$input[ $text ] = isset( $input[ $text ] ) ? sanitize_text_field( $input[ $text ] ) : '';
-		}
+		$input[ $text ] = isset( $input[ $text ] ) ? sanitize_text_field( $input[ $text ] ) : '';
 
-		$integer = array( 'ignore_user_level' );
+		$int = 'ignore_user_level';
 
-		foreach ( $integer as $int ) {
-			$input[ $int ] = isset( $input[ $int ] ) ? absint( $input[ $int ] ) : '';
-		}
+		$input[ $int ] = isset( $input[ $int ] ) ? absint( $input[ $int ] ) : '';
 
 		return apply_filters( 'segment_settings_core_validation', $input );
 	}
