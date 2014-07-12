@@ -571,7 +571,7 @@ class Segment_Analytics_WordPress {
 	 */
 	public function user_register( $user_id ) {
 
-		Segment_Cookie::set_cookie( 'signed_up', md5( json_encode( $user_id ) ) );
+		Segment_Cookie::set_cookie( 'signed_up', json_encode( $user_id ) );
 	}
 
 	/**
@@ -904,6 +904,28 @@ class Segment_Analytics_WordPress {
 			}
 		}
 
+		if ( Segment_Cookie::get_cookie( 'signed_up' ) ) {
+
+			$user_id = json_decode( Segment_Cookie::get_cookie( 'signed_up' ) );
+			$user    = get_user_by( 'id', $user_id );
+
+			add_filter( 'segment_get_current_user_identify', array( self::$instance, 'new_user_identify' ) );
+
+			$track = array(
+				'event'      => __( 'User Signed Up', 'segment' ),
+				'properties' => array(
+					'username'  => $user->user_login,
+					'email'     => $user->user_email,
+					'name'      => $user->display_name,
+					'firstName' => $user->user_firstname,
+					'lastName'  => $user->user_lastname,
+					'url'       => $user->user_url
+				),
+				'http_event' => 'signed_up'
+			);
+
+		}
+
 		// We don't have a page we want to track.
 		if ( ! isset( $track ) ) {
 			$track = false;
@@ -919,6 +941,37 @@ class Segment_Analytics_WordPress {
 		}
 
 		return apply_filters( 'segment_get_current_page_track', $track, $settings, $this );
+	}
+
+	/**
+	 * Filters the .identify() call with the newly signed up user.
+	 * This is helpful, as the user will often times not be authenticated after signing up.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  mixed $identify   False if no user is found, array of traits and ID if a user is found.
+	 * @return array $identify   Array of traits for newly signed up user.
+	 */
+	public function new_user_identify( $identify ) {
+
+		if ( Segment_Cookie::get_cookie( 'signed_up' ) ) {
+
+			$user_id = json_decode( Segment_Cookie::get_cookie( 'signed_up' ) );
+			$user    = get_user_by( 'id', $user_id );
+
+			$identify = array(
+				'user_id' => $user->user_email,
+				'traits'  => array(
+					'username'  => $user->user_login,
+					'email'     => $user->user_email,
+					'firstName' => $user->user_firstname,
+					'lastName'  => $user->user_lastname,
+					'url'       => $user->user_url
+				)
+			);
+		}
+
+		return $identify;
 	}
 
 	/**
