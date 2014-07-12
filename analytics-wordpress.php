@@ -262,6 +262,7 @@ class Segment_Analytics_WordPress {
 		if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Segment_Analytics_WordPress ) ) {
 
 			self::$instance = new Segment_Analytics_WordPress;
+
 			self::$instance->load_textdomain();
 			self::$instance->admin_hooks();
 			self::$instance->frontend_hooks();
@@ -269,14 +270,110 @@ class Segment_Analytics_WordPress {
 			self::$instance->analytics = Segment_Analytics::get_instance();
 
 			self::$instance->include_files();
+
+			add_shortcode( 'segment', array( self::$instance, 'add_shortcode' ) );
 		}
 
 		return self::$instance;
 	}
 
+	/**
+	 * Returns Settings option name.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return string Settings option name
+	 */
 	public function get_option_name() {
 		return $this->option;
 	}
+
+	/**
+	 * Adds "[segment]" shortcode, to allow customized tracking via .track() or .page()
+	 * For passing the property or options arrays, simply use the appropriate attribute,
+	 * along with comma-separated 'name=value' pairs.  Like the following:
+	 *
+	 * [segment method="track" event="Did a Special Thing" properties="Mood=happy,Sun=shining"]
+	 *
+	 * Developers can do very fancy things with this via the `shortcode_atts_segment` filter in WordPress.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param array $atts Array of attributes passed via shortcode.
+	 *
+	 * @return string Output of tracking templates.
+	 */
+	public function add_shortcode( $atts ) {
+
+		extract(
+			shortcode_atts(
+				array(
+						'method'     => '',
+						'event'      => '',
+						'category'   => '',
+						'name'       => '',
+						'properties' => '',
+						'options'    => '',
+					),
+				$atts,
+				'segment'
+			)
+		);
+
+		if ( ! empty( $properties ) ) {
+			$properties = self::_prepare_shortcode_array( $properties );
+		}
+
+		if ( ! empty( $options ) ) {
+			$options = self::_prepare_shortcode_array( $options );
+		}
+
+		ob_start();
+
+		if ( 'track' === $method ) {
+			self::$instance->analytics->track( $event, $properties, $options );
+		} else {
+
+			self::$instance->analytics->page( $category, $name, $properties, $options );
+		}
+
+
+		$output = ob_get_contents();
+
+		ob_end_clean();
+
+		return $output;
+
+	}
+
+	/**
+	 * Parses strings passed to our shortcode for arrays.
+	 *
+	 * @since  1.0.0
+	 * @param  string $string   String, in the format of 'name=value,name2=value2'
+	 * @return array  $output   Parsed array.
+	 */
+	private static function _prepare_shortcode_array( $string ) {
+
+		$output = $_output = array();
+
+		$pairs = explode( ',',  $string );
+
+		foreach ( $pairs as $pair ) {
+			$_output[] = trim( $pair );
+		}
+
+		foreach ( $_output as $pair ) {
+			$values = explode( '=', $pair );
+			$name   = trim( $values[0] );
+			$value  = trim( $values[1] );
+
+			$output[ $name ] = $value;
+		}
+
+		return $output;
+	}
+
 
 	/**
 	 * Hooks into actions and filters that affect the administration areas.
