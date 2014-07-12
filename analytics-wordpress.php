@@ -214,7 +214,6 @@ class Segment_Analytics_WordPress {
 	 * See Segment_Analytics_WordPress::register_settings().
 	 *
 	 * @access public
-	 * @deprecated
 	 * @var array
 	 * @since 1.0.0
 	 */
