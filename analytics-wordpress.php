@@ -210,11 +210,16 @@ class Segment_Analytics_WordPress {
 	/**
 	 * The default values for our options array.
 	 *
-	 * @access private
+	 * Not used since 1.0.0, outside of activation hooks, with our move to the Settings API.
+	 * See Segment_Analytics_WordPress::register_settings().
+	 *
+	 * @access public
+	 * @deprecated
 	 * @var array
 	 * @since 1.0.0
 	 */
-	private $defaults = array(
+	public $defaults = array(
+
 		// Your Segment.io API key that we'll use to initialize analytics.js.
 		'api_key'           => '',
 
@@ -224,27 +229,27 @@ class Segment_Analytics_WordPress {
 
 		// Whether or not we should track events for posts. This also includes
 		// custom post types, for example a Product post type.
-		'track_posts'       => true,
+		'track_posts'       => 1,
 
 		// Whether or not we should track events for pages. This includes the
 		// Home page and things like the About page, Contact page, etc.
-		'track_pages'       => true,
+		'track_pages'       => 1,
 
 		// Whether or not we should track custom events for archive pages like
 		// the Category archive or the Author archive.
-		'track_archives'    => true,
+		'track_archives'    => 1,
 
 		// Whether or not we should track custom events for comments
-		'track_comments'    => true,
+		'track_comments'    => 1,
 
 		// Whether or not we should track custom events for users logging in
-		'track_logins'      => true,
+		'track_logins'      => 1,
 
 		// Whether or not we should track custom events for viewing the logged in page.
 		'track_login_page'  => false,
 
 		// Whether or not we should track custom events for the Search page.
-		'track_searches'    => true
+		'track_searches'    => 1
 	);
 
 	/**
@@ -262,16 +267,16 @@ class Segment_Analytics_WordPress {
 			self::$instance->admin_hooks();
 			self::$instance->frontend_hooks();
 
-			// A bit of a hack until we properly implement the Settings API.
-			if ( is_admin() && isset( $_POST ) ) {
-				self::$instance->init_settings();
-			}
-
 			self::$instance->analytics = Segment_Analytics::get_instance();
+
 			self::$instance->include_files();
 		}
 
 		return self::$instance;
+	}
+
+	public function get_option_name() {
+		return $this->option;
 	}
 
 	/**
@@ -286,7 +291,7 @@ class Segment_Analytics_WordPress {
 			add_action( 'admin_menu'         , array( $this, 'admin_menu' ) );
 			add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 			add_filter( 'plugin_row_meta'    , array( $this, 'plugin_row_meta' )    , 10, 2 );
-
+			add_action( 'admin_init'         , array( $this, 'register_settings' ) );
 		}
 
 	}
@@ -303,6 +308,7 @@ class Segment_Analytics_WordPress {
 
 		do_action( 'segment_pre_include_files', self::$instance );
 
+		include_once( SEG_FILE_PATH . '/class.segment-settings.php' );
 		include_once( SEG_FILE_PATH . '/class.segment-cookie.php' );
 		include_once( SEG_FILE_PATH . '/integrations/ecommerce.php' );
 
@@ -325,26 +331,121 @@ class Segment_Analytics_WordPress {
 		add_action( 'admin_footer'     , array( $this, 'wp_footer' )     , 9    );
 		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
 		add_action( 'wp_login'         , array( $this, 'login_event'    ), 9, 2 );
+		add_action( 'user_register'    , array( $this, 'user_register'  ), 9    );
 	}
 
 	/**
-	 * Gets and sets settings.
-	 * Will likely be deprecated, or at least refactored, as we move to the Settings API.
+	 * Registers our settings, fields and sections using the WordPress Settings API.
 	 *
-	 * @since 1.0.0
+	 * Developers should use the `segment_default_settings` filter to add settings.
+	 * They should also use the `segm.ent_settings_core_validation` filter to validate
+	 * any settings they add.
+	 *
+	 * @since  1.0.0
+	 * @return void
 	 */
-	public function init_settings() {
+	public function register_settings() {
 
-		// Make sure our settings object exists and is backed by our defaults.
-		$settings = $this->get_settings();
+		$settings = apply_filters( 'segment_default_settings', array(
+				'general' => array(
+					'title'    => __( 'General', 'segment' ),
+					'callback' => array( 'Segment_Settings', 'general_section_callback' ),
+					'fields'   => array(
+						array(
+							'name'            => 'api_key',
+							'title'           => __( 'Segment API Write Key', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'api_key_callback' ),
+							'option_callback' => 'sanitize_text_field'
+						)
+					)
+				),
+				'advanced' => array(
+					'title'    => __( 'Advanced Settings', 'segment' ),
+					'callback' => array( 'Segment_Settings', 'advanced_section_callback' ),
+					'fields'   => array(
+						array(
+							'name'            => 'ignore_user_level',
+							'title'           => __( 'Users to Ignore', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'ignore_user_level_callback' ),
+							'option_callback' => 'absint'
+						),
+						array(
+							'name'            => 'track_posts',
+							'title'           => __( 'Track Posts', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_posts_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_pages',
+							'title'           => __( 'Track Pages', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_pages_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_archives',
+							'title'           => __( 'Track Archives', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_archives_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_archives',
+							'title'           => __( 'Track Archives', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_archives_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_comments',
+							'title'           => __( 'Track Comments', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_comments_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_logins',
+							'title'           => __( 'Track Logins', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_logins_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_login_page',
+							'title'           => __( 'Track Login Page Views', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_login_page_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'track_searches',
+							'title'           => __( 'Track Searches', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'track_search_callback' ),
+							'option_callback' => 'is_numeric'
+						),
+					)
+				),
 
-		if ( ! is_array( $settings ) ) {
-			$settings = array();
+			)
+		);
+
+	 	register_setting( self::SLUG, $this->get_option_name(), array( 'Segment_Settings', 'core_validation' ) );
+
+		foreach ( $settings as $section_name => $section ) {
+		 	add_settings_section(
+				$section_name,
+				$section['title'],
+				$section['callback'],
+				self::SLUG
+			);
+
+		 	foreach ( $section['fields'] as $field ) {
+
+			 	add_settings_field(
+					$field['name'],
+					$field['title'],
+					$field['callback'],
+					self::SLUG,
+					$section_name
+				);
+
+		 	}
 		}
 
-		$settings = array_merge( $this->defaults, $settings );
-
-		$this->set_settings( $settings );
 	}
 
 	/**
@@ -462,11 +563,24 @@ class Segment_Analytics_WordPress {
 	}
 
 	/**
+	 * Uses Segment_Cookie::set_cookie() to notify Segment that a user has signed up.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @param  int  $user_id Username of new user.
+	 *
+	 */
+	public function user_register( $user_id ) {
+
+		Segment_Cookie::set_cookie( 'signed_up', md5( json_encode( $user_id ) ) );
+	}
+
+	/**
 	 * Adds "Settings" link to plugin row.
 	 *
-	 * @param  array $links Array of links on plugin action row.
-	 * @param  [type] $file  [description]
-	 * @return [type]        [description]
+	 * @param  array  $links Array of links on plugin action row.
+	 * @param  string $file  Basename of file.
+	 * @return array  $links Modified array of links on plugin action row.
 	 */
 	public function plugin_action_links( $links, $file ) {
 
@@ -543,24 +657,6 @@ class Segment_Analytics_WordPress {
 			wp_die( __( 'Sorry, you don\'t have the permissions to access this page.', 'segment' ) );
 		}
 
-		$settings = $this->get_settings();
-
-		// If we're saving and the nonce matches, update our settings.
-		// Checkboxes have a value of 1, so either they're sent or not?
-		if ( isset( $_POST['submit'] ) && check_admin_referer( $this->option ) ) {
-			$settings['api_key']           = sanitize_text_field( $_POST['api_key'] );
-			$settings['ignore_user_level'] = absint( $_POST['ignore_user_level'] );
-			$settings['track_posts']       = isset( $_POST['track_posts'] )   ;
-			$settings['track_pages']       = isset( $_POST['track_pages'] )   ;
-			$settings['track_archives']    = isset( $_POST['track_archives'] );
-			$settings['track_comments']    = isset( $_POST['track_comments'] );
-			$settings['track_searches']    = isset( $_POST['track_searches'] );
-			$settings['track_logins']      = isset( $_POST['track_logins'] );
-			$settings['track_login_page']  = isset( $_POST['track_login_page'] );
-
-			$this->set_settings( $settings );
-		}
-
 		include_once( SEG_FILE_PATH . '/templates/settings.php');
 	}
 
@@ -573,7 +669,7 @@ class Segment_Analytics_WordPress {
 	 *
 	 * @return array Array of settings.
 	 */
-	private function get_settings() {
+	public function get_settings() {
 		return apply_filters( 'segment_get_settings', get_option( $this->option ), $this );
 	}
 
@@ -585,10 +681,12 @@ class Segment_Analytics_WordPress {
 	 * @param  array $settings Array of settings
 	 * @uses   apply_filters() Applies 'segment_get_settings' filter to allow other developers to override.
 	 *
+	 * @deprecated Deprecated in 1.0.0
+	 *
 	 * @return array Array of settings.
 	 */
 	private function set_settings( $settings ) {
-		return update_option( $this->option, apply_filters( 'segment_set_settings', $settings, $this ) );
+		return update_option( $this->option, $settings );
 	}
 
 	/**
@@ -864,6 +962,25 @@ class Segment_Analytics_WordPress {
 		return array_filter( $array );
 	}
 
+	/**
+	 * Used in our activation hook to set up our default settings.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return void
+	 */
+	public static function setup_settings() {
+
+		$settings = get_option( Segment_Analytics_WordPress::get_instance()->get_option_name() );
+
+		if ( ! empty( $settings ) ) {
+			return;
+		}
+
+		update_option( Segment_Analytics_WordPress::get_instance()->get_option_name(), Segment_Analytics_WordPress::get_instance()->defaults );
+	}
+
 }
 
+register_activation_hook( __FILE__, array( 'Segment_Analytics_WordPress', 'setup_settings' ) );
 add_action( 'plugins_loaded', 'Segment_Analytics_WordPress::get_instance' );
