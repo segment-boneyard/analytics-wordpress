@@ -1,3 +1,3 @@
 <script type="text/javascript">
-	analytics.identify( <?php echo '"' . intval( $user_id ) . '"' ?><?php if ( ! empty( $traits ) ) { echo ', ' . json_encode( array_map( 'esc_js', $traits ) ); } else { echo ', {}'; } ?><?php if ( ! empty( $options ) ) { echo ', ' . json_encode( array_map( 'esc_js', $options ) ); } ?>);
+	analytics.identify( <?php echo '"' . intval( $user_id ) . '"' ?><?php if ( ! empty( $traits ) ) { echo ', ' . json_encode( Segment_Analytics_WordPress::esc_js_deep( $traits ) ); } else { echo ', {}'; } ?><?php if ( ! empty( $options ) ) { echo ', ' . json_encode( Segment_Analytics_WordPress::esc_js_deep( $options ) ); } ?>);
 </script>

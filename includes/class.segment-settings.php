@@ -148,11 +148,37 @@ class Segment_Settings {
 	?>
 		<label for="track_searches">
 			<input name="<?php echo esc_attr( $name ); ?>" type="checkbox" id="track_searches" value="1" <?php checked( 1, $settings['track_searches'] ); ?> />
-			<?php _e( '.', 'segment' ); ?>
+			<?php _e( 'Automatically track events when your users view the search results page.', 'segment' ); ?>
 		</label>
 		<p class="description"><?php _e( 'These will be "Viewed Search Page" events with a &ldquo;query&rdquo; property.', 'segment' ); ?></p>
 	<?php
 
+	}
+
+	/**
+	 * [exclude_custom_post_types description]
+	 *
+	 * @todo  If no post types exist, we shouldn't show this setting at all.
+	 * @return [type] [description]
+	 */
+	public static function exclude_custom_post_types() {
+		$cpts     = get_post_types( array( 'public' => true, '_builtin' => false ), 'objects' );
+		$settings = Segment_Analytics_WordPress::get_instance()->get_settings();
+		$name     = Segment_Analytics_WordPress::get_instance()->get_option_name() . '[exclude_custom_post_types][]';
+
+		$settings['exclude_custom_post_types'] = isset( $settings['exclude_custom_post_types'] ) ? $settings['exclude_custom_post_types'] : array();
+
+		foreach ( $cpts as $cpt ) {
+			?>
+			<label for="exclude_custom_post_types_<?php echo esc_attr( $cpt->name ); ?>">
+				<input name="<?php echo esc_attr( $name ); ?>" type="checkbox" id="exclude_custom_post_types_<?php echo esc_attr( $cpt->name ); ?>" value="<?php echo esc_attr( $cpt->name ); ?>" <?php checked( in_array( $cpt->name, (array) $settings['exclude_custom_post_types'] ) ); ?> />
+				<?php echo esc_html( $cpt->label ); ?><br />
+			</label>
+			<?php
+		}
+		?>
+		<p class="description"><?php _e( 'Select which, if any, custom post types to exclude tracking on.  Selecting a post type here will exclude tracking on the single and archive pages for the post type.', 'segment' ); ?></p>
+		<?php
 	}
 
 	/**
@@ -188,6 +214,8 @@ class Segment_Settings {
 		$int = 'ignore_user_level';
 
 		$input[ $int ] = isset( $input[ $int ] ) ? absint( $input[ $int ] ) : '';
+
+
 
 		return apply_filters( 'segment_settings_core_validation', $input );
 	}

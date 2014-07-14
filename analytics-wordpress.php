@@ -248,7 +248,7 @@ class Segment_Analytics_WordPress {
 		'track_login_page'  => false,
 
 		// Whether or not we should track custom events for the Search page.
-		'track_searches'    => 1
+		'exclude_custom_post_types' => array(),
 	);
 
 	/**
@@ -468,6 +468,11 @@ class Segment_Analytics_WordPress {
 							'name'            => 'track_posts',
 							'title'           => __( 'Track Posts', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_posts_callback' ),
+						),
+						array(
+							'name'            => 'exclude_post_types',
+							'title'           => __( 'Exclude Post Types', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'exclude_custom_post_types' ),
 						),
 						array(
 							'name'            => 'track_pages',
@@ -888,14 +893,18 @@ class Segment_Analytics_WordPress {
 			// we filter those out. The event name is based on the post's type,
 			// and is uppercased.
 			if ( is_single() && ! is_attachment() ) {
-				$categories = implode( ', ', wp_list_pluck( get_categories( get_the_ID() ), 'name' ) );
-				$track = array(
-					'event'      => sprintf( __( 'Viewed %s', 'segment' ), ucfirst( get_post_type() ) ),
-					'properties' => array(
-						'title'      => single_post_title( '', false ),
-						'category'   => $categories
-					)
-				);
+
+				if ( ! self::is_excluded_post_type() ) {
+					$categories = implode( ', ', wp_list_pluck( get_categories( get_the_ID() ), 'name' ) );
+					$track = array(
+						'event'      => sprintf( __( 'Viewed %s', 'segment' ), ucfirst( get_post_type() ) ),
+						'properties' => array(
+							'title'      => single_post_title( '', false ),
+							'category'   => $categories
+						)
+					);
+				}
+
 			}
 		}
 
@@ -1129,6 +1138,45 @@ class Segment_Analytics_WordPress {
 		}
 
 		update_option( Segment_Analytics_WordPress::get_instance()->get_option_name(), Segment_Analytics_WordPress::get_instance()->defaults );
+	}
+
+	/**
+	 * Helper function, essentially a replica of stripslashes_deep, but for esc_js.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param  mixed  $value Handles arrays, strings and objects that we are trying to escape for JS.
+	 * @return mixed  $value esc_js()'d value.
+	 */
+	public static function esc_js_deep( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_map( array( __CLASS__, 'esc_js_deep' ), $value );
+		} elseif ( is_object( $value ) ) {
+			$vars = get_object_vars( $value );
+			foreach ( $vars as $key => $data ) {
+				$value->{$key} = self::esc_js_deep( $data );
+			}
+		} elseif ( is_string( $value ) ) {
+			$value = esc_js( $value );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Checks if current post type is excluded or not.
+	 * Intended to be used on singular views.
+	 *
+	 * @since  1.0.0
+	 *
+	 * @return boolean Whether or not post type is excluded
+	 */
+	public static function is_excluded_post_type() {
+		$settings = $this->get_settings();
+
+		$cpts = isset( $settings['exclude_custom_post_types'] ) ? $settings['exclude_custom_post_types'] : array();
+
+		return in_array( get_post_type(), $cpts );
 	}
 
 }

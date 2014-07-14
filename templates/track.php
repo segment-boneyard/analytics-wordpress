@@ -1,5 +1,5 @@
  <script type="text/javascript">
-  analytics.track(<?php echo '"' . esc_js( $event ) . '"' ?><?php if ( ! empty( $properties ) ) { echo ', ' . json_encode( array_map( 'esc_js', $properties ) ); } else { echo ', {}'; } ?><?php if ( ! empty( $options ) ) { echo ', ' . json_encode( array_map( 'esc_js', $options ) ); } ?>);
+  analytics.track(<?php echo '"' . esc_js( $event ) . '"' ?><?php if ( ! empty( $properties ) ) { echo ', ' . json_encode( Segment_Analytics_WordPress::esc_js_deep( $properties ) ); } else { echo ', {}'; } ?><?php if ( ! empty( $options ) ) { echo ', ' . json_encode( Segment_Analytics_WordPress::esc_js_deep( $options ) ); } ?>);
     <?php
   	if ( $http_event ) :
   		?>
