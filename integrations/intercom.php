@@ -15,16 +15,10 @@ function segment_intercom_integration( $identify, $settings ) {
 
 	if ( is_email( $user_email ) && ! empty( $settings['use_intercom_secure_mode'] ) ) {
 
-		$user = get_user_by( 'email', $user_email );
-
-		if ( $user && is_array( $identify['traits'] ) ) {
-			$identify['traits']['created'] = strtotime( $user->user_registered );
-		}
-
 		$identify['options'] = isset( $identify['options'] ) ? $identify['options'] : array();
 
 		$identify['options']['Intercom'] = array(
-			'user_hash' => hash( 'sha256', $settings['use_intercom_secure_mode'] . $user_email )
+			'userHash' => hash( 'sha256', $settings['use_intercom_secure_mode'] . $user_email )
 		);
 	}
 
