@@ -18,7 +18,7 @@ function segment_intercom_integration( $identify, $settings ) {
 		$user = get_user_by( 'email', $user_email );
 
 		if ( $user && is_array( $identify['traits'] ) ) {
-			$identify['traits']['created'] = $user->user_registered;
+			$identify['traits']['created'] = strtotime( $user->user_registered );
 		}
 
 		$identify['options'] = isset( $identify['options'] ) ? $identify['options'] : array();
