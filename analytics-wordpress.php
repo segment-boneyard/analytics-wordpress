@@ -1172,7 +1172,7 @@ class Segment_Analytics_WordPress {
 	 * @return boolean Whether or not post type is excluded
 	 */
 	public static function is_excluded_post_type() {
-		$settings = $this->get_settings();
+		$settings = self::get_instance()->get_settings();
 
 		$cpts = isset( $settings['exclude_custom_post_types'] ) ? $settings['exclude_custom_post_types'] : array();
 
