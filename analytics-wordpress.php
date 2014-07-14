@@ -612,7 +612,7 @@ class Segment_Analytics_WordPress {
 
 		if ( $identify ) {
 
-			if ( ! isset( $identify['options'] ) {
+			if ( ! isset( $identify['options'] ) ) {
 				$identify['options'] = array();
 			}
 
