@@ -1,9 +1,9 @@
 === Analytics for WordPress — by Segment.io ===
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
-Requires at least: 3.4
-Tested up to: 3.5.1
-Stable tag: 0.5.6
+Requires at least: 3.6
+Tested up to: 3.9.2
+Stable tag: 0.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,11 +48,29 @@ Yup! You can also turn off specific events, in case you only want a few.
 = Can I ignore logged-in users? =
 Yup! You can even _just_ ignore Administrators or Editors too.
 
+= I'm a developer, what should I know? =
+
+Lots of new goodies for developers in the 1.0.0 release!
+
+So very much.  The two biggest enhancements for developers are the introduction of the `segment_get_current_user_identify` and `segment_get_current_page_track` filters.  As a developer, you can hook into these filters and add any sort of conditional logic you want to track any event on a page, or customize the user identification system to hook into your own user system as needed.  Super extensible!
+
+Beyond that, we've completely refactored the plugin to use all of the appropriate WordPress APIs (Like the Settings API) and have added a easily extendable abstract class for eCommerce platforms.  On top of all of that, all of our filters, classes, functions and methods are fully documented inline.
+
+Need to add custom settings?  By hooking into our `segment_default_settings` and `segment_settings_core_validation` filters, you can quickly and easily add your own settings to the Segment plugin.
+
 
 == Screenshots ==
-
+s
 
 == Changelog ==
+
+= 1.0.0 =
+* Total refactor for WordPress plugin best practices.
+* Addition of several helpful filters.
+* Now sends category data for posts.
+* New options to allow you to track user logins.
+* Added eCommerce tracking for WP eCommerce and WooCommerce.
+* Added Intercom Secure Mode support.
 
 = 0.5.6 =
 * Fixed a bug with non-static methods in newer versions on PHP.
