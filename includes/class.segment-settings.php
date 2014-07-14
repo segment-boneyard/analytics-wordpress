@@ -131,6 +131,16 @@ class Segment_Settings {
 
 	}
 
+	public static function use_intercom_secure_mode() {
+
+		$settings = Segment_Analytics_WordPress::get_instance()->get_settings();
+		$name     = Segment_Analytics_WordPress::get_instance()->get_option_name() . '[use_intercom_secure_mode]';
+	?>
+			<input class="regular-text ltr" type="text" name="<?php echo esc_attr( $name ); ?>" id="use_intercom_secure_mode" value="<?php echo esc_attr( $settings['use_intercom_secure_mode'] ); ?>" />
+			<p class="description"><?php _e( 'Enter your Intercom API key here to use Secure Mode.  Your Intercom API key is found in Intercom’s secure mode setup guide.', 'segment' ); ?></p>
+		<?php
+	}
+
 	public static function track_search_callback() {
 
 		$settings = Segment_Analytics_WordPress::get_instance()->get_settings();
@@ -138,12 +148,13 @@ class Segment_Settings {
 	?>
 		<label for="track_searches">
 			<input name="<?php echo esc_attr( $name ); ?>" type="checkbox" id="track_searches" value="1" <?php checked( 1, $settings['track_searches'] ); ?> />
-			<?php _e( 'Automatically track events when your users view the search results page.', 'segment' ); ?>
+			<?php _e( '.', 'segment' ); ?>
 		</label>
 		<p class="description"><?php _e( 'These will be "Viewed Search Page" events with a &ldquo;query&rdquo; property.', 'segment' ); ?></p>
 	<?php
 
 	}
+
 	/**
 	 * Our core validation routine.
 	 *
@@ -168,9 +179,11 @@ class Segment_Settings {
 			$input[ $checkbox ] = isset( $input[ $checkbox ] ) ? '1' : '0';
 		}
 
-		$text = 'api_key';
+		$text_fields = array( 'api_key', 'use_intercom_secure_mode' );
 
-		$input[ $text ] = isset( $input[ $text ] ) ? sanitize_text_field( $input[ $text ] ) : '';
+		foreach ( $text_fields as $text ) {
+			$input[ $text ] = isset( $input[ $text ] ) ? sanitize_text_field( $input[ $text ] ) : '';
+		}
 
 		$int = 'ignore_user_level';
 

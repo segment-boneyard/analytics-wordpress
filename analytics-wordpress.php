@@ -407,6 +407,7 @@ class Segment_Analytics_WordPress {
 		include_once( SEG_FILE_PATH . '/includes/class.segment-settings.php' );
 		include_once( SEG_FILE_PATH . '/includes/class.segment-cookie.php' );
 		include_once( SEG_FILE_PATH . '/integrations/ecommerce.php' );
+		include_once( SEG_FILE_PATH . '/integrations/intercom.php' );
 
 		do_action( 'segment_include_files', self::$instance );
 	}
@@ -451,7 +452,6 @@ class Segment_Analytics_WordPress {
 							'name'            => 'api_key',
 							'title'           => __( 'Segment API Write Key', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'api_key_callback' ),
-							'option_callback' => 'sanitize_text_field'
 						)
 					)
 				),
@@ -463,55 +463,51 @@ class Segment_Analytics_WordPress {
 							'name'            => 'ignore_user_level',
 							'title'           => __( 'Users to Ignore', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'ignore_user_level_callback' ),
-							'option_callback' => 'absint'
 						),
 						array(
 							'name'            => 'track_posts',
 							'title'           => __( 'Track Posts', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_posts_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_pages',
 							'title'           => __( 'Track Pages', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_pages_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_archives',
 							'title'           => __( 'Track Archives', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_archives_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_archives',
 							'title'           => __( 'Track Archives', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_archives_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_comments',
 							'title'           => __( 'Track Comments', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_comments_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_logins',
 							'title'           => __( 'Track Logins', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_logins_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_login_page',
 							'title'           => __( 'Track Login Page Views', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_login_page_callback' ),
-							'option_callback' => 'is_numeric'
 						),
 						array(
 							'name'            => 'track_searches',
 							'title'           => __( 'Track Searches', 'segment' ),
 							'callback'        => array( 'Segment_Settings', 'track_search_callback' ),
-							'option_callback' => 'is_numeric'
+						),
+						array(
+							'name'            => 'use_intercom_secure_mode',
+							'title'           => __( 'Intercom API Secret', 'segment' ),
+							'callback'        => array( 'Segment_Settings', 'use_intercom_secure_mode' ),
 						),
 					)
 				),
@@ -613,8 +609,14 @@ class Segment_Analytics_WordPress {
 		// Identify the user if the current user merits it.
 		$identify = $this->get_current_user_identify();
 
+
 		if ( $identify ) {
-			self::$instance->analytics->identify( $identify['user_id'], $identify['traits'] );
+
+			if ( ! isset( $identify['options'] ) {
+				$identify['options'] = array();
+			}
+
+			self::$instance->analytics->identify( $identify['user_id'], $identify['traits'], $identify['options'] );
 		}
 
 		// Track a custom page view event if the current page merits it.
