@@ -139,11 +139,10 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 			$items    = WC()->cart->get_cart();
 			$product  = json_decode( $product );
-			$_product = $items[ $product->key ];
 
 			$item = array(
 				'id'       => $product->ID,
-				'sku'      => $_product['data']->get_sku(),
+				'sku'      => get_product( $product->ID )->get_sku()
 				'name'     => $product->name,
 				'price'    => $product->price,
 				'quantity' => $product->quantity,
