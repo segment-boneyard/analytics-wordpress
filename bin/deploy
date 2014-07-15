@@ -1,0 +1,74 @@
+#!/bin/sh
+
+#
+# Fetch form GitHub.
+#
+
+echo
+echo "Fetching latest tags from GitHub..."
+git fetch
+
+#
+# Prompt for the tag to deploy.
+#
+
+read -p "☛  Which version (eg. '1.0.3') do you want to deploy? " version
+
+#
+# Make sure the version is valid.
+#
+
+if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+then
+  echo
+  echo "Error: \"$version\" is not a valid version string."
+  echo
+  exit 1
+fi
+
+#
+# Make sure the version exists.
+#
+
+if [[ -n $(git ls-remote --tags origin $version) ]]
+then
+  echo "Found $version on GitHub."
+else
+  echo
+  echo "Error: $version has not been pushed to GitHub."
+  echo
+  exit 1
+fi
+
+#
+# Reset the local SVN branch.
+#
+
+echo "Updating local SVN branch..."
+git checkout svn
+git reset --hard origin/svn
+
+#
+# Merge changes from the chosen tag.
+#
+
+echo "Merging changes into local SVN branch..."
+git merge $version -X theirs -m "merge $version into svn"
+
+#
+# Commit, tag and push svn.
+#
+
+git svn dcommit
+git svn tag $version
+git push origin svn
+
+#
+# Exit gracefully.
+#
+
+echo
+echo "Successfully pushed $version to the WordPress Plugin Directory!"
+echo "https://wordpress.org/plugins/segmentio"
+echo
+exit 0
