@@ -117,6 +117,7 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 				)
 			)
 		);
+
 	}
 
 	/**
@@ -135,25 +136,31 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 		$track = $args[0];
 
-		if ( false !== ( $product = Segment_Cookie::get_cookie( 'added_to_cart' ) ) ) {
+		if ( false !== ( $cookie = Segment_Cookie::get_cookie( 'added_to_cart' ) ) ) {
 
 			$items    = WC()->cart->get_cart();
-			$product  = json_decode( $product );
+			$_product = json_decode( $cookie );
 
-			$item = array(
-				'id'       => $product->ID,
-				'sku'      => get_product( $product->ID )->get_sku()
-				'name'     => $product->name,
-				'price'    => $product->price,
-				'quantity' => $product->quantity,
-				'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $product->ID, 'product_cat' ), 'name' ) ),
-			);
+			if ( is_object( $_product ) ) {
+				$product  = get_product( $_product->ID );
 
-			$track = array(
-				'event'      => __( 'Added Product', 'segment' ),
-				'properties' => $item,
-				'http_event' => 'added_to_cart'
-			);
+				if ( $product ) {
+					$item = array(
+						'id'       => $product->id,
+						'sku'      => $product->get_sku(),
+						'name'     => $product->get_title(),
+						'price'    => $product->get_price(),
+						'quantity' => $_product->quantity,
+						'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $product->id, 'product_cat' ), 'name' ) ),
+					);
+
+					$track = array(
+						'event'      => __( 'Added Product', 'segment' ),
+						'properties' => $item,
+						'http_event' => 'added_to_cart'
+					);
+				}
+			}
 
 		}
 
@@ -203,26 +210,31 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 		$track = $args[0];
 
-		if ( false !== ( $product = Segment_Cookie::get_cookie( 'removed_from_cart' ) ) ) {
+		if ( false !== ( $cookie = Segment_Cookie::get_cookie( 'removed_from_cart' ) ) ) {
 			$items    = WC()->cart->get_cart();
-			$product  = json_decode( $product );
-			$_product = $items[ $product->key ];
 
-			$item = array(
-				'id'       => $product->ID,
-				'sku'      => $_product['data']->get_sku(),
-				'name'     => $product->name,
-				'price'    => $product->price,
-				'quantity' => 0,
-				'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $product->ID, 'product_cat' ), 'name' ) ),
-			);
+			$_product  = json_decode( $cookie );
 
-			$track = array(
-				'event'      => __( 'Removed Product', 'segment' ),
-				'properties' => $item,
-				'http_event' => 'removed_from_cart'
-			);
+			if ( is_object( $_product ) ) {
+				$product  = get_product( $_product->ID );
 
+				if ( $product ) {
+					$item = array(
+						'id'       => $product->ID,
+						'sku'      => $product->get_sku(),
+						'name'     => $product->get_title(),
+						'price'    => $product->get_price(),
+						'quantity' => 0,
+						'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $product->ID, 'product_cat' ), 'name' ) ),
+					);
+
+					$track = array(
+						'event'      => __( 'Removed Product', 'segment' ),
+						'properties' => $item,
+						'http_event' => 'removed_from_cart'
+					);
+				}
+			}
 		}
 
 		return $track;
