@@ -18,16 +18,16 @@ define( 'WP_DEBUG', true );
 ```
 
 
+## Support
+
+If you run into issues, be sure to check out the [documentation](https://segment.io/plugins/wordpress), and you can always reach out to our [support team](https://segment.io/support) for help!
+
+
 ## Deploying
 
 To deploy a new version of the WordPress plugin to the Plugins Directory, use the `make deploy` command which will ask which existing Git tag you want to deploy. You'll need to get credentials for the Segment SVN repository.
 
 _Note: this is for internal Segment use only, and if you're just pull requesting things to the plugin you don't need to worry about this._
-
-
-## Support
-
-If you run into issues, be sure to check out the [documentation](https://segment.io/plugins/wordpress), and you can always reach out to our [support team](https://segment.io/support) for help!
 
 
 ## License
