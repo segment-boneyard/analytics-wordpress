@@ -104,6 +104,10 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 	 */
 	public function add_to_cart( $key, $id, $quantity ) {
 
+		if ( ! is_object( WC()->cart ) ) {
+			return;
+		}
+
 		$items     = WC()->cart->get_cart();
 		$cart_item = $items[ $key ];
 
@@ -137,6 +141,10 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		$track = $args[0];
 
 		if ( false !== ( $cookie = Segment_Cookie::get_cookie( 'added_to_cart' ) ) ) {
+
+			if ( ! is_object( WC()->cart ) ) {
+				return $track;
+			}
 
 			$items    = WC()->cart->get_cart();
 			$_product = json_decode( $cookie );
@@ -179,6 +187,11 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 	 *                        for each different platform, we use func_get_args().
 	 */
 	public function remove_from_cart( $key ) {
+
+		if ( ! is_object( WC()->cart ) ) {
+			return;
+		}
+
 		$items     = WC()->cart->get_cart();
 		$cart_item = $items[ $key ];
 
@@ -211,7 +224,12 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		$track = $args[0];
 
 		if ( false !== ( $cookie = Segment_Cookie::get_cookie( 'removed_from_cart' ) ) ) {
-			$items    = WC()->cart->get_cart();
+
+			if ( ! is_object( WC()->cart ) ) {
+				return $track;
+			}
+
+			$items = WC()->cart->get_cart();
 
 			$_product  = json_decode( $cookie );
 
