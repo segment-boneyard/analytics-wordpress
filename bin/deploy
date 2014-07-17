@@ -61,12 +61,13 @@ git merge $version -X theirs -m "merge $version into svn"
 
 git svn dcommit
 git svn tag $version
-git push origin svn
+git push origin svn --force
 
 #
 # Exit gracefully.
 #
 
+git checkout master
 echo
 echo "Successfully pushed $version to the WordPress Plugin Directory!"
 echo "https://wordpress.org/plugins/segmentio"

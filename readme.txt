@@ -3,7 +3,7 @@ Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
 Tested up to: 3.9.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,8 +64,11 @@ Need to add custom settings?  By hooking into our `segment_default_settings` and
 
 == Changelog ==
 
+= 1.0.2 =
+* Fixed deployment logic
+
 = 1.0.1 =
-* Fixes fatal error when tracking WooCommerce products.
+* Fixed fatal error when tracking WooCommerce products.
 
 = 1.0.0 =
 * Total refactor for WordPress plugin best practices.
