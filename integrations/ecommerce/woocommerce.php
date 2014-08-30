@@ -146,7 +146,6 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 				return $track;
 			}
 
-			$items    = WC()->cart->get_cart();
 			$_product = json_decode( $cookie );
 
 			if ( is_object( $_product ) ) {
@@ -228,8 +227,6 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 			if ( ! is_object( WC()->cart ) ) {
 				return $track;
 			}
-
-			$items = WC()->cart->get_cart();
 
 			$_product  = json_decode( $cookie );
 

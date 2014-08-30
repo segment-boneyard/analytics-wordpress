@@ -888,7 +888,7 @@ class Segment_Analytics_WordPress {
 			$commenter = array_filter( wp_get_current_commenter() );
 
 			if ( $commenter ) {
-				$hash      = md5( json_encode( $commenter ) );
+				$hash = md5( json_encode( $commenter ) );
 
 				if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
 
