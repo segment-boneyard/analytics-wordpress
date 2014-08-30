@@ -3,7 +3,7 @@
 Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your WordPress site.
-Version: 1.0.3
+Version: 1.0.4
 License: GPLv2
 Author: Segment.io
 Author URI: https://segment.io
@@ -178,7 +178,7 @@ class Segment_Analytics_WordPress {
 	/**
 	 * Current plugin version.
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 
 	/**
 	 * The singleton instance of Segment_Analytics_WordPress.
@@ -723,7 +723,7 @@ class Segment_Analytics_WordPress {
 		$settings  = $this->get_settings();
 
 		$user      = wp_get_current_user();
-		$commenter = wp_get_current_commenter();
+		$commenter = array_filter( wp_get_current_commenter() );
 		$identify  = false;
 
 		// We've got a logged-in user.
@@ -885,18 +885,21 @@ class Segment_Analytics_WordPress {
 		// --------
 		if ( $settings['track_comments'] ) {
 
-			$commenter = wp_get_current_commenter();
-			$hash      = md5( json_encode( $commenter ) );
+			$commenter = array_filter( wp_get_current_commenter() );
 
-			if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
+			if ( $commenter ) {
+				$hash      = md5( json_encode( $commenter ) );
 
-				$track = array(
-					'event'      => __( 'Commented', 'segment' ),
-					'properties' => array(
-						'commenter' => $commenter
-					),
-					'http_event' => 'left_comment'
-				);
+				if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
+
+					$track = array(
+						'event'      => __( 'Commented', 'segment' ),
+						'properties' => array(
+							'commenter' => $commenter
+						),
+						'http_event' => 'left_comment'
+					);
+				}
 			}
 
 		}
