@@ -241,6 +241,12 @@ class Segment_Analytics_WordPress {
 		// Whether or not we should track custom events for comments
 		'track_comments'    => 1,
 
+		// Whether or not we should use Intercom's Secure Mode
+		'use_intercom_secure_mode'    => '',
+
+		// Whether or not we should track custom events for searches
+		'track_searches'    => 1,
+
 		// Whether or not we should track custom events for users logging in
 		'track_logins'      => 1,
 
