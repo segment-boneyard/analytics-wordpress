@@ -1,34 +1,45 @@
-=== Analytics for WordPress — by Segment.io ===
+=== Analytics for WordPress — by Segment ===
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
 Tested up to: 3.9.2
-Stable tag: 0.6
+Stable tag: 1.0.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Analytics for WordPress is the easiest way to integrate analytics into your WordPress site.
+Analytics for WordPress lets you integrate more than 100 analytics and marketing tools with the flick of a switch.
 
 
 == Description ==
 
-Analytics for WordPress is the easiest way to integrate analytics into your WordPress site.
+Analytics for WordPress is the easiest way to integrate analytics and marketing tools into your WordPress site. 
 
-By installing Segment.io's WordPress plugin you can add any analytics service to your site without touching any code.
+Instead of installing each tool individually, just install Segment's WordPress plugin and use Segment to integrate third-party analytics and marketing tools.   Once you're setup, you can swap and add new analytics services with the flick of a switch!
 
-Segment.io lets you send your analytics data to Google Analytics, Mixpanel, KISSmetrics, Chartbeat, and more... without having to integrate with each and every one, saving you time.
+Here's how it works:
+* Install the Segment plugin
+* Segment will automatically start tracking how people are using your site – what pages they view and the information they provide to you, like their emails
+* Go to the Segment control panel, and toggle on any tool you want to try like Google Analytics, KISSmetrics and Facebook Audiences
+* Segment will send this data along to each tool
+* The service is fully integrated into your site–zero code required!
 
-Once you're setup, you can swap and add new analytics services with the click of a button!
+You can use Segment to try out more than a hundred vendors in a number of categories. Here are just a few of our most popular integrations:
+* **Advertising** – AdRoll, Google Adwords, Facebook Audiences, Twitter Ads, Quantcast, AppNexus
+* **Analytics** – Google Analytics, KISSmetrics, Mixpanel, Amplitude, Chartbeat, Go Squared
+* **CRM** – Salesforce, Zendesk, Gainsight, Frontleaf
+* **Email** – Customer.io, Outbound, Vero, Marketo, MailChimp, Hubspot
+* **Optimization** – Optimizely, CrazyEgg, Visual Website Optimizer
 
+Get started with Analytics for WordPress today!
 
 == Installation ==
 
 1. Go to the **Plugins > Add New** page in your WordPress admin.
-1. Search for "Segment.io" and install **Analytics for WordPress — by Segment.io**.
+1. Search for "Segment" and install **Analytics for WordPress — by Segment.io**.
 1. Click **Activate Plugin**.
-1. Go to **Settings > Analytics** and enter your Segment.io API key. (If you haven't signed up for Segment.io yet, now's the time!)
+1. Go to **Settings > Analytics** and enter your Segment API key. (If you haven't signed up for Segment yet, now's the time!)
 
-That's it! You can now turn on any analytics service with the click of a button in the Segment.io interface.
+That's it! You can now turn on any analytics service with the flick of a switch in the Segment control panel.
 
 
 == Frequently Asked Questions ==
@@ -60,9 +71,15 @@ Need to add custom settings?  By hooking into our `segment_default_settings` and
 
 
 == Screenshots ==
-s
+
 
 == Changelog ==
+
+= 1.0.2 =
+* Fixed deployment logic
+
+= 1.0.1 =
+* Fixed fatal error when tracking WooCommerce products.
 
 = 1.0.0 =
 * Total refactor for WordPress plugin best practices.
