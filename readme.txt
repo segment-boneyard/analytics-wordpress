@@ -1,5 +1,5 @@
 === Analytics for WordPress — by Segment ===
-Contributors: segmentio
+Contributors: segmentio, JustinSainton
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
 Tested up to: 4.0
