@@ -2,8 +2,8 @@
 Contributors: segmentio
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
-Tested up to: 3.9.2
-Stable tag: 1.0.3
+Tested up to: 4.0
+Stable tag: 1.0.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Analytics for WordPress lets you integrate more than 100 analytics and marketing
 
 == Description ==
 
-Analytics for WordPress is the easiest way to integrate analytics and marketing tools into your WordPress site. 
+Analytics for WordPress is the easiest way to integrate analytics and marketing tools into your WordPress site.
 
 Instead of installing each tool individually, just install Segment's WordPress plugin and use Segment to integrate third-party analytics and marketing tools.   Once you're setup, you can swap and add new analytics services with the flick of a switch!
 
@@ -74,6 +74,12 @@ Need to add custom settings?  By hooking into our `segment_default_settings` and
 
 
 == Changelog ==
+
+= 1.0.4 =
+* Fixed identify() method to only be called for logged-in users and commenters.
+
+= 1.0.3 =
+* Fixed deployment logic
 
 = 1.0.2 =
 * Fixed deployment logic
