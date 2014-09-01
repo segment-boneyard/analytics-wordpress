@@ -23,7 +23,7 @@ class Segment_Cookie {
 	 * @since  1.0.0
 	 */
 	public static function set_cookie( $key, $value ) {
-		setcookie( 'segment_' . $key . '_' . COOKIEHASH, $value, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		@ setcookie( 'segment_' . $key . '_' . COOKIEHASH, $value, time() + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 		$_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] = $value;
 	}
 
@@ -63,7 +63,7 @@ class Segment_Cookie {
 			$key = sanitize_text_field( $_POST['key'] );
 		}
 
-		setcookie( 'segment_' . $key . '_' . COOKIEHASH, '', time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		@ setcookie( 'segment_' . $key . '_' . COOKIEHASH, '', time() - DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 		unset( $_COOKIE[ 'segment_' . $key . '_' . COOKIEHASH ] );
 
 		wp_send_json_success( $key );
