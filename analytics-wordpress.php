@@ -724,7 +724,7 @@ class Segment_Analytics_WordPress {
 	 * @return bool|array Returns false if there is no commenter or logged in user
 	 *                    An array of the user ID and traits if there is an authenticated user.
 	 */
-	private function get_current_user_identify() {
+	public function get_current_user_identify() {
 		$settings  = $this->get_settings();
 
 		$user      = wp_get_current_user();
