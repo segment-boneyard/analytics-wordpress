@@ -215,8 +215,6 @@ class Segment_Settings {
 
 		$input[ $int ] = isset( $input[ $int ] ) ? absint( $input[ $int ] ) : '';
 
-
-
 		return apply_filters( 'segment_settings_core_validation', $input );
 	}
 

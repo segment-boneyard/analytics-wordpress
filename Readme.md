@@ -17,6 +17,16 @@ Running into notices, warnings or errors?  Enable `WP_DEBUG` for proper error re
 define( 'WP_DEBUG', true );
 ```
 
+## Contributing
+
+We'd love to have you contribute to the Segment WordPress plugin.  We'll gladly review any pull request, but pull requests that have followed recommended practices are more likely to be merged:
+
+1. Our recommended development environment for contributing to the Segment WordPress plugin is called [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV).  It's a community-developed Vagrant environment for WordPress.  If you do any WordPress development at all, you won't find a better development environment.  We highly recommend using it.
+1. After you've installed VVV, `vagrant up`, change directories to whichever WordPress install you're developing against, and `git clone https://github.com/your-user-account/analytics-wordpress.git` into the plugins directory.  This assumes you've already forked the Segment WordPress plugin.  If you haven't, be sure to do so.
+1. Boom, you're ready to go!  Go to the WordPress instance you're using (consult the [VVV documentation](https://github.com/Varying-Vagrant-Vagrants/VVV/blob/master/README.md#wordpress-stable) if you're not sure which to use) and activate the Segment plugin.
+1. Now you're ready to make your changes.  Fixing a bug? Awesome! Write unit tests.  Adding a feature? Sweet! Write unit tests. Check out our [current tests in the tests folder](https://github.com/segmentio/analytics-wordpress/tree/master/tests) for reference.
+1. Once your changes are made and tests are written, confirm that all tests and assertions are passing by running `phpunit` from the command line in the plugin directory.
+1. Commit, send your pull request, and pat yourself on the back for contributing to open source software!
 
 ## Support
 

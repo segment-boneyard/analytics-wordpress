@@ -3,7 +3,7 @@
 Plugin Name: Analytics for WordPress — by Segment.io
 Plugin URI: https://segment.io/plugins/wordpress
 Description: The hassle-free way to integrate any analytics service into your WordPress site.
-Version: 1.0.3
+Version: 1.0.4
 License: GPLv2
 Author: Segment.io
 Author URI: https://segment.io
@@ -134,7 +134,7 @@ class Segment_Analytics {
 	}
 
 	/**
-	 * Render a Javascript `track` call
+	 * Render a Javascript `page` call
 	 *
 	 * @since  1.0.0
 	 *
@@ -178,7 +178,7 @@ class Segment_Analytics_WordPress {
 	/**
 	 * Current plugin version.
 	 */
-	const VERSION = '1.0.3';
+	const VERSION = '1.0.4';
 
 	/**
 	 * The singleton instance of Segment_Analytics_WordPress.
@@ -241,6 +241,12 @@ class Segment_Analytics_WordPress {
 		// Whether or not we should track custom events for comments
 		'track_comments'    => 1,
 
+		// Whether or not we should use Intercom's Secure Mode
+		'use_intercom_secure_mode'    => '',
+
+		// Whether or not we should track custom events for searches
+		'track_searches'    => 1,
+
 		// Whether or not we should track custom events for users logging in
 		'track_logins'      => 1,
 
@@ -292,15 +298,10 @@ class Segment_Analytics_WordPress {
 	 * @since  1.0.0
 	 */
 	public function admin_hooks() {
-
-		if ( is_admin() && ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) )  {
-
-			add_action( 'admin_menu'         , array( $this, 'admin_menu' ) );
-			add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
-			add_filter( 'plugin_row_meta'    , array( $this, 'plugin_row_meta' )    , 10, 2 );
-			add_action( 'admin_init'         , array( $this, 'register_settings' ) );
-		}
-
+		add_action( 'admin_menu'         , array( self::$instance, 'admin_menu' ) );
+		add_filter( 'plugin_action_links', array( self::$instance, 'plugin_action_links' ), 10, 2 );
+		add_filter( 'plugin_row_meta'    , array( self::$instance, 'plugin_row_meta' )    , 10, 2 );
+		add_action( 'admin_init'         , array( self::$instance, 'register_settings' ) );
 	}
 
 	/**
@@ -331,30 +332,24 @@ class Segment_Analytics_WordPress {
 	 */
 	public function frontend_hooks() {
 
-		add_action( 'wp_head'          , array( $this, 'wp_head' )       , 9    );
-		add_action( 'admin_head'       , array( $this, 'wp_head' )       , 9    );
-		add_action( 'login_head'       , array( $this, 'wp_head' )       , 9    );
-		add_action( 'wp_footer'        , array( $this, 'wp_footer' )     , 9    );
-		add_action( 'login_footer'     , array( $this, 'wp_footer' )     , 9    );
-		add_action( 'admin_footer'     , array( $this, 'wp_footer' )     , 9    );
-		add_action( 'wp_insert_comment', array( $this, 'insert_comment' ), 9, 2 );
-		add_action( 'wp_login'         , array( $this, 'login_event'    ), 9, 2 );
-		add_action( 'user_register'    , array( $this, 'user_register'  ), 9    );
+		add_action( 'wp_head'          , array( self::$instance, 'wp_head' )       , 9    );
+		add_action( 'admin_head'       , array( self::$instance, 'wp_head' )       , 9    );
+		add_action( 'login_head'       , array( self::$instance, 'wp_head' )       , 9    );
+		add_action( 'wp_footer'        , array( self::$instance, 'wp_footer' )     , 9    );
+		add_action( 'login_footer'     , array( self::$instance, 'wp_footer' )     , 9    );
+		add_action( 'admin_footer'     , array( self::$instance, 'wp_footer' )     , 9    );
+		add_action( 'wp_insert_comment', array( self::$instance, 'insert_comment' ), 9, 2 );
+		add_action( 'wp_login'         , array( self::$instance, 'login_event'    ), 9, 2 );
+		add_action( 'user_register'    , array( self::$instance, 'user_register'  ), 9    );
 	}
 
 	/**
-	 * Registers our settings, fields and sections using the WordPress Settings API.
+	 * Returns array of settings.
 	 *
-	 * Developers should use the `segment_default_settings` filter to add settings.
-	 * They should also use the `segm.ent_settings_core_validation` filter to validate
-	 * any settings they add.
-	 *
-	 * @since  1.0.0
-	 * @return void
+	 * @since  1.0.4
 	 */
-	public function register_settings() {
-
-		$settings = apply_filters( 'segment_default_settings', array(
+	public function _get_default_settings() {
+		return apply_filters( 'segment_default_settings', array(
 				'general' => array(
 					'title'    => __( 'General', 'segment' ),
 					'callback' => array( 'Segment_Settings', 'general_section_callback' ),
@@ -430,10 +425,26 @@ class Segment_Analytics_WordPress {
 
 			)
 		);
+	}
+
+	/**
+	 * Registers our settings, fields and sections using the WordPress Settings API.
+	 *
+	 * Developers should use the `segment_default_settings` filter to add settings.
+	 * They should also use the `segment_settings_core_validation` filter to validate
+	 * any settings they add.
+	 *
+	 * @since  1.0.0
+	 * @return void
+	 */
+	public function register_settings() {
+
+		$settings = $this->_get_default_settings();
 
 	 	register_setting( self::SLUG, $this->get_option_name(), array( 'Segment_Settings', 'core_validation' ) );
 
 		foreach ( $settings as $section_name => $section ) {
+
 		 	add_settings_section(
 				$section_name,
 				$section['title'],
@@ -713,11 +724,11 @@ class Segment_Analytics_WordPress {
 	 * @return bool|array Returns false if there is no commenter or logged in user
 	 *                    An array of the user ID and traits if there is an authenticated user.
 	 */
-	private function get_current_user_identify() {
+	public function get_current_user_identify() {
 		$settings  = $this->get_settings();
 
 		$user      = wp_get_current_user();
-		$commenter = wp_get_current_commenter();
+		$commenter = array_filter( wp_get_current_commenter() );
 		$identify  = false;
 
 		// We've got a logged-in user.
@@ -879,18 +890,21 @@ class Segment_Analytics_WordPress {
 		// --------
 		if ( $settings['track_comments'] ) {
 
-			$commenter = wp_get_current_commenter();
-			$hash      = md5( json_encode( $commenter ) );
+			$commenter = array_filter( wp_get_current_commenter() );
 
-			if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
+			if ( $commenter ) {
+				$hash = md5( json_encode( $commenter ) );
 
-				$track = array(
-					'event'      => __( 'Commented', 'segment' ),
-					'properties' => array(
-						'commenter' => $commenter
-					),
-					'http_event' => 'left_comment'
-				);
+				if ( Segment_Cookie::get_cookie( 'left_comment', $hash ) ) {
+
+					$track = array(
+						'event'      => __( 'Commented', 'segment' ),
+						'properties' => array(
+							'commenter' => $commenter
+						),
+						'http_event' => 'left_comment'
+					);
+				}
 			}
 
 		}
