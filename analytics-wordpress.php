@@ -147,6 +147,9 @@ class Segment_Analytics {
 	 */
 	public static function page( $category = '', $name = '', $properties = array(), $options = array(), $http_event = false ) {
 
+		// Set the proper `library` option so we know where the API calls come from.
+		$options['library'] = 'analytics-wordpress';
+
 		include_once( SEG_FILE_PATH . '/templates/page.php' );
 
 	}
