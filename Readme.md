@@ -1,12 +1,12 @@
 
 # Analytics for WordPress
 
-**Analytics for WordPress** is a WordPress plugin for [Segment](https://segment.io) that lets you send data to any analytics service you want without touching any code.
+**Analytics for WordPress** is a WordPress plugin for [Segment](https://segment.com) that lets you send data to any analytics service you want without touching any code.
 
 
 ## Installation
 
-To get up and running, checkout our documentation at [segment.io/plugins/wordpress](https://segment.io/plugins/wordpress)—installation takes less than five minutes!
+To get up and running, checkout our documentation at [segment.com/plugins/wordpress](https://segment.com/plugins/wordpress)—installation takes less than five minutes!
 
 
 ## Debugging
@@ -30,7 +30,7 @@ We'd love to have you contribute to the Segment WordPress plugin.  We'll gladly 
 
 ## Support
 
-If you run into issues, be sure to check out the [documentation](https://segment.io/plugins/wordpress), and you can always reach out to our [support team](https://segment.io/support) for help!
+If you run into issues, be sure to check out the [documentation](https://segment.com/plugins/wordpress), and you can always reach out to our [support team](https://segment.com/support) for help!
 
 
 ## Deploying
