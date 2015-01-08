@@ -45,8 +45,8 @@ fi
 #
 
 echo "Updating local SVN branch..."
+git branch -f svn origin/svn
 git checkout svn
-git reset --hard origin/svn
 
 #
 # Merge changes from the chosen tag.
