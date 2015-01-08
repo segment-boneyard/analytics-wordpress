@@ -3,7 +3,7 @@ Contributors: segmentio, JustinSainton
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,10 @@ Need to add custom settings?  By hooking into our `segment_default_settings` and
 
 
 == Changelog ==
+
+= 1.0.6 =
+* Bump snippet to version 3.0.0
+* Fix for category retrieval bug
 
 = 1.0.5 =
 * Add context information to page calls.
