@@ -4,4 +4,5 @@
 	window.analytics.load("<?php echo esc_js( $settings['api_key'] ); ?>");
 	window.analytics.page();
 	<?php endif; ?>
+  }}();
 </script>
