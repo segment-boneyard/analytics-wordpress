@@ -6,7 +6,7 @@
 
 ## Installation
 
-To get up and running, checkout our documentation at [segment.com/plugins/wordpress](https://segment.com/plugins/wordpress)—installation takes less than five minutes!
+To get up and running, checkout our documentation at [segment.com/docs/platforms/wordpress](https://segment.com/docs/platforms/wordpress/)—installation takes less than five minutes!
 
 
 ## Debugging
@@ -30,7 +30,7 @@ We'd love to have you contribute to the Segment WordPress plugin.  We'll gladly 
 
 ## Support
 
-If you run into issues, be sure to check out the [documentation](https://segment.com/plugins/wordpress), and you can always reach out to our [support team](https://segment.com/support) for help!
+If you run into issues, be sure to check out the [documentation](https://segment.com/docs/platforms/wordpress/), and you can always reach out to our [support team](https://segment.com/support) for help!
 
 
 ## Deploying
