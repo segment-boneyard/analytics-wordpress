@@ -744,7 +744,8 @@ class Segment_Analytics_WordPress {
 					'email'     => $user->user_email,
 					'firstName' => $user->user_firstname,
 					'lastName'  => $user->user_lastname,
-					'url'       => $user->user_url
+					'url'       => $user->user_url,
+					'created_at' =>  $user->user_registered
 				)
 			);
 		}
@@ -1002,7 +1003,8 @@ class Segment_Analytics_WordPress {
 					'email'     => $user->user_email,
 					'firstName' => $user->user_firstname,
 					'lastName'  => $user->user_lastname,
-					'url'       => $user->user_url
+					'url'       => $user->user_url,
+					'created_at' =>  $user->user_registered
 				)
 			);
 		}
