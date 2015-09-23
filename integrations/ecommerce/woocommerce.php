@@ -111,6 +111,10 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 		$items     = WC()->cart->get_cart();
 		$cart_item = $items[ $key ];
 
+		if ( ! is_object( $cart_item ) ) {
+			return;
+		}
+
 		Segment_Cookie::set_cookie( 'added_to_cart', json_encode(
 				array(
 					'ID'       => $id,
@@ -193,6 +197,10 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 
 		$items     = WC()->cart->get_cart();
 		$cart_item = $items[ $key ];
+
+		if ( ! is_object( $cart_item ) ) {
+			return;
+		}
 
 		Segment_Cookie::set_cookie( 'removed_from_cart', json_encode(
 				array(
