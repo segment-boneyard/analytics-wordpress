@@ -293,12 +293,12 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 				foreach ( $items as $item ) {
 					$_product = $order->get_product_from_item( $item );
 					$product = array(
-						'id'       => $item->product_id,
+						'id'       => $item['product_id'],
 						'sku'      => $_product->get_sku(),
 						'name'     => $item['name'],
 						'price'    => $item['line_subtotal'],
 						'quantity' => $item['qty'],
-						'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $item->product_id, 'product_cat' ), 'name' ) ),
+						'category' => implode( ', ', wp_list_pluck( wc_get_product_terms( $item['product_id'], 'product_cat' ), 'name' ) ),
 					);
 
 					$products[] = $product;
