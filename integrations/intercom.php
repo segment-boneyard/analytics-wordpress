@@ -18,7 +18,7 @@ function segment_intercom_integration( $identify, $settings ) {
 		$identify['options'] = isset( $identify['options'] ) ? $identify['options'] : array();
 
 		$identify['options']['Intercom'] = array(
-			'userHash' => hash( 'sha256', $settings['use_intercom_secure_mode'] . $user_email )
+			'userHash' => hash_hmac( 'sha256', $user_email, $settings['use_intercom_secure_mode'] )
 		);
 	}
 
