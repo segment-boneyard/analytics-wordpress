@@ -3,7 +3,7 @@ Contributors: segmentio, JustinSainton
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.0.12
+Stable tag: 1.0.13
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
