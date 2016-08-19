@@ -970,7 +970,7 @@ class Segment_Analytics_WordPress {
 		if ( $track ) {
 			// All of these are checking for pages, and we don't want that to throw
 			// off Google Analytics's bounce rate, so mark them `noninteraction`.
-			$track['properties']['noninteraction'] = true;
+			$track['properties']['nonInteraction'] = true;
 
 			// Clean out empty properties before sending it back.
 			$track['properties'] = array_filter( $track['properties'] );
@@ -1027,7 +1027,7 @@ class Segment_Analytics_WordPress {
 			$page['properties'] = is_array( $page['properties'] ) ? $page['properties'] : array();
 			// All of these are checking for pages, and we don't want that to throw
 			// off Google Analytics's bounce rate, so mark them `noninteraction`.
-			$page['properties']['noninteraction'] = true;
+			$page['properties']['nonInteraction'] = true;
 
 			// Clean out empty properties before sending it back.
 			$page['properties'] = array_filter( $page['properties'] );
