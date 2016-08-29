@@ -1,4 +1,8 @@
-=== Analytics for WordPress — by Segment ===
+Analytics for WordPress — by Segment
+====================================
+
+> **NOTE**: Official support from Segment for this plugin is **deprecated**. We are currently looking for community maintainers. The current version of this plugin should be free of bugs but any existing and future development will be paused for the time being. We recommend exploring and using third party alternatives. If you have any questions or have interest in stewarding the Segment Wordpress plugin, please send us an email at friends@segment.com!
+
 Contributors: segmentio, JustinSainton
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
@@ -9,14 +13,13 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Analytics for WordPress lets you integrate more than 100 analytics and marketing tools with the flick of a switch.
 
-
-== Description ==
+## Description
 
 Analytics for WordPress is the easiest way to integrate analytics and marketing tools into your WordPress site.
 
 Instead of installing each tool individually, just install Segment's WordPress plugin and use Segment to integrate third-party analytics and marketing tools.   Once you're setup, you can swap and add new analytics services with the flick of a switch!
 
-Here's how it works:
+## Here's how it works:
 * Install the Segment plugin
 * Segment will automatically start tracking how people are using your site – what pages they view and the information they provide to you, like their emails
 * Go to the Segment control panel, and toggle on any tool you want to try like Google Analytics, KISSmetrics and Facebook Audiences
@@ -32,7 +35,7 @@ You can use Segment to try out more than a hundred vendors in a number of catego
 
 Get started with Analytics for WordPress today!
 
-== Installation ==
+## Installation
 
 1. Go to the **Plugins > Add New** page in your WordPress admin.
 1. Search for "Segment" and install **Analytics for WordPress — by Segment.io**.
@@ -42,24 +45,24 @@ Get started with Analytics for WordPress today!
 That's it! You can now turn on any analytics service with the flick of a switch in the Segment control panel.
 
 
-== Frequently Asked Questions ==
+## Frequently Asked Questions 
 
-= What analytics services does it support? =
+- What analytics services does it support? =
 Tons! Google Analytics, Mixpanel, KISSmetrics, Chartbeat, Clicky, Intercom, CrazyEgg, Customer.io, Gauges, GoSquared, HubSpot, Marketo, Olark, Quantcast, Vero, and more... You can check out [the full list](https://segment.io/integrations).
 
-= What user information does it record automatically? =
+- What user information does it record automatically? =
 We automatically identify users that are logged in to your WordPress site, and record their `name`, `email`, `username`, and `website`, so you don't need to write any special code to handle that yourself. It also identifies commenters if it can.
 
-= Which actions does it record automatically? =
+- Which actions does it record automatically? =
 We automatically record the different types of WordPress pages your users can visit. Things like "View About Page", "View Post", "View Author Page", etc. So you don't have to worry about recording them yourself. Just by enabling the plugin you'll already be recording all of those actions.
 
-= Can I turn off the automatic event tracking? =
+- Can I turn off the automatic event tracking? =
 Yup! You can also turn off specific events, in case you only want a few.
 
-= Can I ignore logged-in users? =
+- Can I ignore logged-in users? =
 Yup! You can even _just_ ignore Administrators or Editors too.
 
-= I'm a developer, what should I know? =
+- I'm a developer, what should I know? =
 
 Lots of new goodies for developers in the 1.0.0 release!
 
@@ -70,10 +73,10 @@ Beyond that, we've completely refactored the plugin to use all of the appropriat
 Need to add custom settings?  By hooking into our `segment_default_settings` and `segment_settings_core_validation` filters, you can quickly and easily add your own settings to the Segment plugin.
 
 
-== Screenshots ==
+## Screenshots
 
 
-== Changelog ==
+## Changelog
 
 = 1.0.6 =
 * Bump snippet to version 3.0.0
