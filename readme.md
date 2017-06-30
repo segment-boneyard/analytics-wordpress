@@ -7,7 +7,7 @@ Contributors: segmentio, JustinSainton
 Tags: analytics, web analytics, segment.io, google analytics, kissmetrics, mixpanel, chartbeat, hubspot, marketo, quantcast, tag manager
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,7 +45,7 @@ Get started with Analytics for WordPress today!
 That's it! You can now turn on any analytics service with the flick of a switch in the Segment control panel.
 
 
-## Frequently Asked Questions 
+## Frequently Asked Questions
 
 - What analytics services does it support? =
 Tons! Google Analytics, Mixpanel, KISSmetrics, Chartbeat, Clicky, Intercom, CrazyEgg, Customer.io, Gauges, GoSquared, HubSpot, Marketo, Olark, Quantcast, Vero, and more... You can check out [the full list](https://segment.io/integrations).
@@ -77,6 +77,10 @@ Need to add custom settings?  By hooking into our `segment_default_settings` and
 
 
 ## Changelog
+
+= 1.0.14 = 
+
+* Fix Google Analytics nonInteraction bug
 
 = 1.0.6 =
 * Bump snippet to version 3.0.0
