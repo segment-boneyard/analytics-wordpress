@@ -64,16 +64,16 @@ class Segment_Analytics_WordPress_Test extends WP_UnitTestCase {
 	}
 
 	public function test_register_settings_is_setting_registered() {
-		global $new_whitelist_options;
+		global $new_allowlist_options;
 
 		$this->object->register_settings();
 
 		$plugin = $this->object;
 		$slug   = $plugin::SLUG;
 
-		$this->assertArrayHasKey( $slug, $new_whitelist_options );
+		$this->assertArrayHasKey( $slug, $new_allowlist_options );
 
-		$name = $new_whitelist_options[ $slug ];
+		$name = $new_allowlist_options[ $slug ];
 
 		$this->assertContains( $this->object->get_option_name(), $name );
 	}
