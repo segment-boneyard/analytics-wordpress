@@ -313,6 +313,7 @@ class Segment_Commerce_Woo extends Segment_Commerce {
 						'revenue'  => $order->get_total() - ( $order->get_total_shipping() + $order->get_total_tax() ),
 						'shipping' => $order->get_total_shipping(),
 						'tax'      => $order->get_total_tax(),
+						'currency' => $order->get_order_currency(),
 						'products' => $products
 					)
 				);
